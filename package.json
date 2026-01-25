@@ -1,0 +1,50 @@
+{
+  "name": "nova",
+  "private": true,
+  "description": "CLI for easy stablecoins",
+  "license": "MIT",
+  "packageManager": "pnpm@10.28.1",
+  "engines": {
+    "node": "==24"
+  },
+  "type": "module",
+  "bin": {
+    "nova": "bin/nova.mjs"
+  },
+  "scripts": {
+    "build": "pnpm tsc",
+    "lint:eslint": "pnpm eslint .",
+    "lint:prettier": "pnpm prettier -c .",
+    "lint": "pnpm npm-run-all lint:eslint lint:prettier",
+    "prettier": "pnpm exec prettier -w ."
+  },
+  "resolutions": {
+    "@harmoniclabs/crypto": "^0.3.0-dev0"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^8.2.0",
+    "@scure/base": "^2.0.0",
+    "arktype": "^2.1.29",
+    "conf": "^15.0.2",
+    "decimal.js": "^10.6.0",
+    "emailjs": "^5.0.0",
+    "native-machine-id": "^0.3.5",
+    "ts-handling": "^0.2.5",
+    "tsx": "^4.21.0"
+  },
+  "devDependencies": {
+    "@types/config": "^3.3.5",
+    "@types/node": "^25.0.10",
+    "@typescript-eslint/eslint-plugin": "^8.53.1",
+    "@typescript-eslint/parser": "^8.53.1",
+    "commander": "^14.0.2",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "ky": "^1.14.2",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3"
+  }
+}
