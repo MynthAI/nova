@@ -12,9 +12,30 @@ withdraw stablecoins.
 - 📥 Withdraw stablecoins to external blockchains
 - 🔐 Multiple authentication methods
 
+## 🚀 Quick Start
+
+Get up and running in under a minute:
+
+``` bash
+git clone https://github.com/your-org/nova.git
+cd nova
+pnpm install
+pnpm link
+```
+
+Authenticate and start using Nova:
+
+``` bash
+nova login you@example.com
+nova balance
+nova send 10 friend@example.com
+```
+
+Use `-h` or `--help` with any command to see detailed usage information.
+
 ## 📦 Installation
 
-> **Requirements**
+### Requirements
 
 - Node.js **v24** (required)
 - `pnpm` package manager
@@ -27,6 +48,11 @@ pnpm install
 pnpm link
 ```
 
+After linking, the `nova` command will be available globally.
+
+> ℹ️ Nova is currently installed from source. If/when it is published to
+> npm, installation instructions will be updated.
+
 ## 🔐 Authentication
 
 Nova supports **two authentication methods**. You can choose the one
@@ -37,32 +63,32 @@ that best fits your workflow and security preferences.
 Authenticate using your email address. Nova creates and manages a wallet
 for your account.
 
-**How it works**
+#### How it works
 
 - You log in using your email address
 - Nova securely manages your wallet
 - You generate an authentication token for CLI access
 
-**Commands**
+#### Commands
 
 ``` bash
 nova login <email>
 nova token
 ```
 
-**Best for**
+#### Best for
 
 - New users
 - Fast setup
 - Users who don’t want to manage private keys
 
-**Pros**
+#### Pros
 
 - Simple and beginner-friendly
 - No manual key management
 - Account recovery via email
 
-**Cons**
+#### Cons
 
 - Requires trust in Nova for key management
 - Email access is required
@@ -72,26 +98,26 @@ nova token
 Authenticate by importing an existing wallet using a **private key** or
 **mnemonic seed phrase**. All signing happens locally.
 
-**Commands**
+#### Commands
 
 ``` bash
 nova import key
 nova import phrase
 ```
 
-**Best for**
+#### Best for
 
 - Advanced users
 - Full self-custody
 - Using an existing wallet
 
-**Pros**
+#### Pros
 
 - Full control over your funds
 - No email required
 - Keys never leave your machine
 
-**Cons**
+#### Cons
 
 - You are responsible for key security
 - No recovery if keys are lost
