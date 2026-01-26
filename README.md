@@ -1,14 +1,16 @@
 # nova
 
 **nova** is a Node.js CLI tool for easily interacting with stablecoins.
-It provides simple commands to check balance, send and withdraw.
+It provides simple commands to check balance, send, receive, and
+withdraw stablecoins.
 
 ## ✨ Features
 
 - 🪙 Receive stablecoins
 - 💰 Check balance
 - 📤 Send stablecoins to anyone for free
-- 📥 Withdraw stablecoin to external blockchain
+- 📥 Withdraw stablecoins to external blockchains
+- 🔐 Multiple authentication methods
 
 ## 📦 Installation
 
@@ -24,6 +26,83 @@ cd nova
 pnpm install
 pnpm link
 ```
+
+## 🔐 Authentication
+
+Nova supports **two authentication methods**. You can choose the one
+that best fits your workflow and security preferences.
+
+### 1️⃣ Email-based Authentication (Recommended)
+
+Authenticate using your email address. Nova creates and manages a wallet
+for your account.
+
+**How it works**
+
+- You log in using your email address
+- Nova securely manages your wallet
+- You generate an authentication token for CLI access
+
+**Commands**
+
+``` bash
+nova login <email>
+nova token
+```
+
+**Best for**
+
+- New users
+- Fast setup
+- Users who don’t want to manage private keys
+
+**Pros**
+
+- Simple and beginner-friendly
+- No manual key management
+- Account recovery via email
+
+**Cons**
+
+- Requires trust in Nova for key management
+- Email access is required
+
+### 2️⃣ Private Key Authentication (Self-custody)
+
+Authenticate by importing an existing wallet using a **private key** or
+**mnemonic seed phrase**. All signing happens locally.
+
+**Commands**
+
+``` bash
+nova import key
+nova import phrase
+```
+
+**Best for**
+
+- Advanced users
+- Full self-custody
+- Using an existing wallet
+
+**Pros**
+
+- Full control over your funds
+- No email required
+- Keys never leave your machine
+
+**Cons**
+
+- You are responsible for key security
+- No recovery if keys are lost
+
+⚠️ **Warning:** If you lose your private key or seed phrase, your funds
+cannot be recovered.
+
+### 🔄 Switching Authentication Methods
+
+- Email-based accounts can export their wallet and move to self-custody
+- Private-key accounts cannot be converted to email-based authentication
 
 ## 🚀 Usage
 
@@ -54,7 +133,7 @@ nova login <email>
 
 #### `token`
 
-Create an authentication token after logging in.
+Create an authentication token (email-based accounts only).
 
 ``` bash
 nova token
