@@ -48,8 +48,24 @@ const login = async (email: string) => {
       },
     })
     .json();
-  const token = TokenResponse.assert(response).contents.token;
-  console.log(token);
+  return TokenResponse.assert(response).contents.token;
+};
+
+const AddressResponse = type({
+  contents: {
+    address: "string",
+  },
+});
+
+const getAddress = async (token: string) => {
+  const response = await ky
+    .get(`${endpoint}/accounts/address`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .json();
+  const address = AddressResponse.assert(response).contents.address;
+  return address;
 };
 
 login("example@gmail.com"); // User to input email address
+getAddress("d92bccee64b8c1f218ec4863b5a35bc5"); // use token from login()
