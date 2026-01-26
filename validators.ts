@@ -1,7 +1,7 @@
 import { type } from "arktype";
 import { InvalidArgumentError } from "commander";
 import { Decimal } from "decimal.js";
-import { validate } from "./address";
+import { validate } from "./commands/address";
 import { Networks } from "./endpoints";
 
 const parseEmail = (value: string) => {
