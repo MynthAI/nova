@@ -37,7 +37,7 @@ const login = async (email: string) => {
   await ky.post(`${endpoint}/auth/auth`, { json: { code, email } });
 
   const nonce = new Uint8Array(32);
-  getRandomValues(new Uint8Array(32));
+  getRandomValues(nonce);
   const signature = await signPayload(nonce, keys.private);
   const response = await ky
     .post(`${endpoint}/auth/create-token`, {
