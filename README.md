@@ -170,7 +170,7 @@ nova send <amount> <destination>
 
 #### `withdraw`
 
-Withdraw balance to an external blockchain as a stablecoin.
+Withdraw funds to an external blockchain as a stablecoin.
 
 ``` bash
 nova withdraw <amount> <stablecoin> <address> <blockchain>
