@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const projectRoot = path.resolve(__dirname, "..");
-const cliTs = path.join(projectRoot, "cli.ts");
+const cliTs = path.join(projectRoot, "entrypoint.ts");
 
 const localTsx = path.join(
   projectRoot,

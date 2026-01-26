@@ -9,6 +9,7 @@ type Settings = {
   mainnetEmail?: string;
   mainnetKey?: string;
   network?: Network;
+  privateKey?: string;
   testnetEmail?: string;
   testnetKey?: string;
 };
