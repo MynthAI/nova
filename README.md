@@ -1,14 +1,15 @@
 # nova
 
 **nova** is a Node.js CLI tool for easily interacting with stablecoins.
-It provides simple commands to check balance, send, receive, and
-withdraw stablecoins.
+It provides simple commands to check balance, send, receive, withdraw,
+and share funds via claim links.
 
 ## ✨ Features
 
 - 🪙 Receive stablecoins
 - 💰 Check balance
 - 📤 Send stablecoins to anyone for free
+- 🔗 Generate shareable claim links
 - 📥 Withdraw stablecoins to external blockchains
 - 🔐 Multiple authentication methods
 
@@ -17,7 +18,7 @@ withdraw stablecoins.
 Get up and running in under a minute:
 
 ``` bash
-git clone https://github.com/your-org/nova.git
+git clone https://github.com/MynthAI/nova.git
 cd nova
 pnpm install
 pnpm link
@@ -183,16 +184,45 @@ nova balance
 
 #### `send`
 
-Send balance to another Nova account.
+Send funds to another Nova account or generate a claim link.
 
 ``` bash
-nova send <amount> <destination>
+nova send <amount> [destination]
 ```
 
 **Arguments**
 
 - `amount` — Amount to send
-- `destination` — Recipient email or Nova account address
+- `destination` *(optional)* — Recipient email or Nova account address
+
+**Behavior**
+
+- If `destination` **is provided**, funds are sent directly to that
+  account
+- If `destination` **is omitted**, Nova generates a **claim link**
+
+``` bash
+nova send 25
+```
+
+Example output:
+
+``` text
+Sent 25 to https://www.mynth.ai/c/MUhW0KzcB1BVxNRicamrRw
+```
+
+Anyone with the link can claim the funds. Once claimed, the link becomes
+invalid.
+
+#### Claim links
+
+- Claim links represent a one-time transferable balance
+- The first person to claim the link receives the funds
+- Links can be shared via chat, email, or any messaging platform
+- Unclaimed funds remain locked until claimed
+
+⚠️ **Warning:** Anyone with access to the claim link can claim the
+funds. Share links carefully.
 
 #### `withdraw`
 

@@ -7,7 +7,7 @@ import program, { logExit } from "../cli";
 import config, { getNetwork } from "../config";
 import { AccountsEndpoints, type Network } from "../endpoints";
 import { signPayload, transformPrivateKey } from "../key-signer";
-import { AddressResponse } from "../responses";
+import { AddressResponse, LinkCreatedResponse } from "../responses";
 import { parseAmount, parseDestination } from "../validators";
 import { createToken } from "./token";
 
@@ -16,16 +16,14 @@ type Email = `${string}@${string}`;
 
 const send = async (
   amount: Decimal,
-  destination: Address | Email,
+  destination: Address | Email | undefined,
   network: Network,
 ) => {
   const token = await createToken(network);
   if (!token.ok) return token;
 
   const endpoint = AccountsEndpoints[network];
-  const to = destination.includes("@")
-    ? await resolve(destination as Email, endpoint)
-    : destination;
+  const { to, url } = await resolve(destination, endpoint);
   await ky
     .post(`${endpoint}/transfer`, {
       headers: { Authorization: "Bearer " + token.data },
@@ -36,22 +34,20 @@ const send = async (
       },
     })
     .json();
-  return Ok();
+  return Ok(url);
 };
 
 const sendWithPrivateKey = async (
   privateKey: string,
   amount: Decimal,
-  destination: Address | Email,
+  destination: Address | Email | undefined,
   network: Network,
 ) => {
   const finalPrivateKey = transformPrivateKey(privateKey);
   if (!finalPrivateKey.ok) return finalPrivateKey;
 
   const endpoint = AccountsEndpoints[network];
-  const to = destination.includes("@")
-    ? await resolve(destination as Email, endpoint)
-    : destination;
+  const { to, url } = await resolve(destination, endpoint);
   const nonce = randomBytes(32).toString("hex");
   const payload = encode({
     amount: amount.toString(),
@@ -69,7 +65,7 @@ const sendWithPrivateKey = async (
       },
     })
     .json();
-  return Ok();
+  return Ok(url);
 };
 
 const sendWithTokenOrKey = (amount: Decimal, destination: Address | Email) => {
@@ -80,12 +76,33 @@ const sendWithTokenOrKey = (amount: Decimal, destination: Address | Email) => {
   return send(amount, destination, getNetwork());
 };
 
-const resolve = async (email: Email, endpoint: string) => {
+const createLink = async (endpoint: string) => {
+  const response = await ky.post(`${endpoint}/create-link`).json();
+  const linkResponse = LinkCreatedResponse.assert(response);
+  const domain = new URL(endpoint).origin;
+  const url = `${domain}/c/${linkResponse.contents.token}`;
+  return {
+    address: linkResponse.contents.address,
+    url,
+  };
+};
+
+const resolve = async (
+  destination: Address | Email | undefined,
+  endpoint: string,
+) => {
+  if (!destination) {
+    const link = await createLink(endpoint);
+    return { to: link.address, url: link.url };
+  }
+
+  if (!destination.includes("@")) return { to: destination, url: undefined };
+
   const response = await ky
-    .get(`${endpoint}/resolve`, { searchParams: { email } })
+    .get(`${endpoint}/resolve`, { searchParams: { email: destination } })
     .json();
   const addressResponse = AddressResponse.assert(response);
-  return addressResponse.contents.address;
+  return { to: addressResponse.contents.address, url: undefined };
 };
 
 program
@@ -93,11 +110,11 @@ program
   .description("Send balance to another account")
   .argument("amount", "The amount of balance to send", parseAmount)
   .argument(
-    "destination",
-    "The email address or Mynth account address to send balance to",
+    "[destination]",
+    "The email address or Mynth account address to send balance to. If omitted then a claim link will be created.",
     parseDestination,
   )
-  .action(async (amount: Decimal, destination: string) => {
+  .action(async (amount: Decimal, destination?: string) => {
     const privateKey = config.get("privateKey");
     if (privateKey) {
       const sent = await sendWithPrivateKey(
@@ -108,14 +125,14 @@ program
       );
       if (!sent.ok) return logExit(sent.error);
 
-      console.log("Sent", amount, "to", destination);
+      console.log("Sent", amount, "to", destination ?? sent.data);
       return;
     }
 
     const sent = await send(amount, destination, getNetwork());
     if (!sent.ok) return logExit(sent.error);
 
-    console.log("Sent", amount, "to", destination);
+    console.log("Sent", amount, "to", destination ?? sent.data);
   });
 
 export { sendWithTokenOrKey };
