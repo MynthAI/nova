@@ -1,6 +1,7 @@
 import { Bytes, getPublicKeyAsync } from "@noble/ed25519";
 import { blake3 } from "@noble/hashes/blake3.js";
 import { bech32 } from "@scure/base";
+import { Argument } from "commander";
 import ky from "ky";
 import { mayFail, Ok } from "ts-handling";
 import program, { logExit } from "../cli";
@@ -10,7 +11,32 @@ import { transformPrivateKey } from "../key-signer";
 import { AddressResponse } from "../responses";
 import { createToken } from "./token";
 
-const getAddress = async (network: Network) => {
+const Blockchains = [
+  "base",
+  "cardano",
+  "hyperliquid",
+  "mynth",
+  "plasma",
+  "solana",
+  "stable",
+  "sui",
+  "tron",
+] as const;
+type Blockchain = (typeof Blockchains)[number];
+
+const BlockchainMap = {
+  base: "evm",
+  cardano: "cardano",
+  hyperliquid: "evm",
+  mynth: "address",
+  plasma: "evm",
+  solana: "solana",
+  stable: "evm",
+  sui: "sui",
+  tron: "tron",
+} as const;
+
+const getAddress = async (network: Network, blockchain: Blockchain) => {
   const token = await createToken(network);
   if (!token.ok) return token;
 
@@ -21,7 +47,7 @@ const getAddress = async (network: Network) => {
     })
     .json();
   const validatedResponse = AddressResponse.assert(response);
-  const address = validatedResponse.contents.address;
+  const address = validatedResponse.contents[BlockchainMap[blockchain]];
   return Ok(address);
 };
 
@@ -62,15 +88,22 @@ const getAddressFromTokenOrKey = async () => {
   const privateKey = config.get("privateKey");
   if (privateKey) return getAddressFromPrivateKey(privateKey);
 
-  return getAddress(getNetwork());
+  return getAddress(getNetwork(), "mynth");
 };
 
 program
   .command("address")
   .description("Gets account address")
-  .action(async () => {
+  .addArgument(
+    new Argument("[blockchain]", "The blockchain to get the address for")
+      .choices(Blockchains)
+      .default("mynth"),
+  )
+  .action(async (blockchain: Blockchain) => {
     const privateKey = config.get("privateKey");
     if (privateKey) {
+      if (blockchain !== "mynth")
+        return logExit(`${blockchain} currently not supported`);
       const address = await getAddressFromPrivateKey(privateKey);
       if (!address.ok) return logExit(address.error);
 
@@ -78,7 +111,7 @@ program
       return;
     }
 
-    const address = await getAddress(getNetwork());
+    const address = await getAddress(getNetwork(), blockchain);
     if (!address.ok) return logExit(address.error);
 
     console.log(address.data);
