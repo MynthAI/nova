@@ -1,4 +1,4 @@
-import { createHash } from "crypto";
+import { createHash, randomBytes } from "crypto";
 import Conf from "conf";
 import { getMachineIdSync } from "native-machine-id";
 import { Network } from "./endpoints";
@@ -29,5 +29,16 @@ const config = new Conf<Settings>({
 
 const getNetwork = () => config.get("network") ?? "testnet";
 
+const getPrivateKey = () => {
+  const network = getNetwork();
+  const email = config.get(`${network}Email`);
+  const privateKey = config.get("privateKey");
+
+  if (!email && !privateKey)
+    config.set("privateKey", randomBytes(32).toString("hex"));
+
+  return config.get("privateKey");
+};
+
 export default config;
-export { getNetwork };
+export { getNetwork, getPrivateKey };

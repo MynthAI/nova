@@ -3,12 +3,12 @@ import { wordlist } from "@scure/bip39/wordlists/english.js";
 import { type } from "arktype";
 import { Err, Ok } from "ts-handling";
 import program, { logExit } from "../cli";
-import config from "../config";
+import { getPrivateKey as getSavedPrivateKey } from "../config";
 
 const PrivateKey = type("string.hex == 32").or("string.hex == 64");
 
 const getPrivateKey = () => {
-  const key = config.get("privateKey");
+  const key = getSavedPrivateKey();
   if (!key) return Err("Private key isn't set");
 
   const validatedKey = PrivateKey(key);

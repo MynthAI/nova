@@ -4,7 +4,7 @@ import { Decimal } from "decimal.js";
 import ky from "ky";
 import { Ok } from "ts-handling";
 import program, { logExit } from "../cli";
-import config, { getNetwork } from "../config";
+import { getNetwork, getPrivateKey } from "../config";
 import { AccountsEndpoints, type Network } from "../endpoints";
 import { signPayload, transformPrivateKey } from "../key-signer";
 import { AddressResponse, LinkCreatedResponse } from "../responses";
@@ -69,7 +69,7 @@ const sendWithPrivateKey = async (
 };
 
 const sendWithTokenOrKey = (amount: Decimal, destination: Address | Email) => {
-  const privateKey = config.get("privateKey");
+  const privateKey = getPrivateKey();
   if (privateKey)
     return sendWithPrivateKey(privateKey, amount, destination, getNetwork());
 
@@ -115,7 +115,7 @@ program
     parseDestination,
   )
   .action(async (amount: Decimal, destination?: string) => {
-    const privateKey = config.get("privateKey");
+    const privateKey = getPrivateKey();
     if (privateKey) {
       const sent = await sendWithPrivateKey(
         privateKey,
