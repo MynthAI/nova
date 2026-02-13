@@ -5,7 +5,7 @@ import { Argument } from "commander";
 import ky from "ky";
 import { mayFail, Ok } from "ts-handling";
 import program, { logExit } from "../cli";
-import config, { getNetwork } from "../config";
+import { getNetwork, getPrivateKey } from "../config";
 import { AccountsEndpoints, type Network } from "../endpoints";
 import { transformPrivateKey } from "../key-signer";
 import { AddressResponse } from "../responses";
@@ -104,7 +104,7 @@ const getAddressFromPrivateKey = async (privateKey: string) => {
 };
 
 const getAddressFromTokenOrKey = async () => {
-  const privateKey = config.get("privateKey");
+  const privateKey = getPrivateKey();
   if (privateKey) return getAddressFromPrivateKey(privateKey);
 
   return getAddressViaAuth(getNetwork(), "mynth");
@@ -119,7 +119,7 @@ program
       .default("mynth"),
   )
   .action(async (blockchain: Blockchain) => {
-    const privateKey = config.get("privateKey");
+    const privateKey = getPrivateKey();
     if (privateKey) {
       const address = await getAddressViaPrivateKey(
         privateKey,
