@@ -1,4 +1,5 @@
-import program from "./cli";
+import { CommanderError } from "commander";
+import program, { getHelp, logExit, printOk } from "./cli";
 import "./commands/address";
 import "./commands/balance";
 import "./commands/config";
@@ -9,4 +10,24 @@ import "./commands/send";
 import "./commands/token";
 import "./commands/withdraw";
 
-program.parseAsync(process.argv);
+try {
+  await program.parseAsync(process.argv);
+} catch (error) {
+  if (error instanceof CommanderError) {
+    if (error.code === "commander.helpDisplayed") {
+      const help = getHelp();
+      printOk({ help: help.replace(/\s+/g, " ").trim() }, help.trim());
+    } else {
+      logExit(
+        {
+          code: error.code.split(".")[1] ?? "unknown",
+          message: error.message,
+        },
+        error.exitCode,
+        error.message,
+      );
+    }
+  } else {
+    logExit(String(error));
+  }
+}

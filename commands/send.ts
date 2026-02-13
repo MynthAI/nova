@@ -3,7 +3,7 @@ import { encode } from "@msgpack/msgpack";
 import { Decimal } from "decimal.js";
 import ky from "ky";
 import { Ok } from "ts-handling";
-import program, { logExit } from "../cli";
+import program, { logExit, printOk } from "../cli";
 import { getNetwork, getPrivateKey } from "../config";
 import { AccountsEndpoints, type Network } from "../endpoints";
 import { signPayload, transformPrivateKey } from "../key-signer";
@@ -108,6 +108,8 @@ const resolve = async (
 program
   .command("send")
   .description("Send balance to another account")
+  .option("-j, --json", "Output results as JSON")
+  .option("-t, --toon", "Output results as TOON")
   .argument("amount", "The amount of balance to send", parseAmount)
   .argument(
     "[destination]",
@@ -125,14 +127,30 @@ program
       );
       if (!sent.ok) return logExit(sent.error);
 
-      console.log("Sent", amount, "to", destination ?? sent.data);
+      printOk(
+        {
+          sent: true,
+          amount: amount.toString(),
+          to: destination ?? sent.data ?? null,
+          claimUrl: destination ? null : (sent.data ?? null),
+        },
+        `Sent ${amount} to ${destination ?? sent.data}`,
+      );
       return;
     }
 
     const sent = await send(amount, destination, getNetwork());
     if (!sent.ok) return logExit(sent.error);
 
-    console.log("Sent", amount, "to", destination ?? sent.data);
+    printOk(
+      {
+        sent: true,
+        amount: amount.toString(),
+        to: destination ?? sent.data ?? null,
+        claimUrl: destination ? null : (sent.data ?? null),
+      },
+      `Sent ${amount} to ${destination ?? sent.data}`,
+    );
   });
 
 export { sendWithTokenOrKey };

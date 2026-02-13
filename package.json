@@ -28,11 +28,13 @@
     "@noble/hashes": "^2.0.1",
     "@scure/base": "^2.0.0",
     "@scure/bip39": "^2.0.1",
+    "@toon-format/toon": "^2.1.0",
     "arktype": "^2.1.29",
     "conf": "^15.0.2",
     "decimal.js": "^10.6.0",
     "emailjs": "^5.0.0",
     "native-machine-id": "^0.3.5",
+    "safe-stable-stringify": "^2.5.0",
     "ts-handling": "^0.2.5",
     "tsx": "^4.21.0"
   },

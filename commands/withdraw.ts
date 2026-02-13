@@ -2,7 +2,7 @@ import { type } from "arktype";
 import { Decimal } from "decimal.js";
 import ky from "ky";
 import { Err } from "ts-handling";
-import program, { logExit } from "../cli";
+import program, { logExit, printOk } from "../cli";
 import { getNetwork } from "../config";
 import { AddressEndpoints, type Network } from "../endpoints";
 import resolveStablecoin from "../stablecoins";
@@ -70,6 +70,8 @@ const withdraw = async (
 program
   .command("withdraw")
   .description("Withdraws balance to external blockchain")
+  .option("-j, --json", "Output results as JSON")
+  .option("-t, --toon", "Output results as TOON")
   .argument("amount", "The amount of balance to withdraw", parseAmount)
   .argument(
     "stablecoin",
@@ -98,6 +100,14 @@ program
       );
       if (!withdrawn.ok) return logExit(withdrawn.error);
 
-      console.log("Withdrew", amount, "to", address);
+      printOk(
+        {
+          amount: amount.toString(),
+          stablecoin,
+          to: address,
+          blockchain,
+        },
+        `Withdrew ${amount} to ${address}`,
+      );
     },
   );

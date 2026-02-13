@@ -3,7 +3,7 @@ import { type } from "arktype";
 import ky from "ky";
 import { Err, mayFailAsync, Ok } from "ts-handling";
 import { generateKeys } from "../auth-signer";
-import program, { logExit } from "../cli";
+import program, { logExit, printOk } from "../cli";
 import config, { getNetwork } from "../config";
 import { AuthEndpoints, type Network } from "../endpoints";
 import { RateLimited } from "../responses";
@@ -75,10 +75,12 @@ const login = async (email: string, network: Network) => {
 program
   .command("login")
   .description("Login with email")
+  .option("-j, --json", "Output results as JSON")
+  .option("-t, --toon", "Output results as TOON")
   .argument("email", "The email to login with", parseEmail)
   .action(async (email: string) => {
     const loggedIn = await login(email, getNetwork());
     if (!loggedIn.ok) return logExit(loggedIn.error);
 
-    console.log("Logged in as", email);
+    printOk({ email, loggedIn: true }, `Logged in as ${email}`);
   });
