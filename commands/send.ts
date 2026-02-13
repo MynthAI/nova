@@ -136,6 +136,7 @@ program
         },
         `Sent ${amount} to ${destination ?? sent.data}`,
       );
+      return;
     }
 
     const sent = await send(amount, destination, getNetwork());
