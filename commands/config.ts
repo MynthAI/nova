@@ -1,4 +1,4 @@
-import program from "../cli";
+import program, { printOk } from "../cli";
 import config, { getNetwork } from "../config";
 import { type Network } from "../endpoints";
 import { parseNetwork } from "../validators";
@@ -14,8 +14,10 @@ const get = configCommand
 get
   .command("network")
   .description("Gets the current configured network")
+  .option("-j, --json", "Output results as JSON")
   .action(() => {
-    console.log(getNetwork());
+    const network = getNetwork();
+    printOk({ network }, network);
   });
 
 const set = configCommand
@@ -25,8 +27,10 @@ const set = configCommand
 set
   .command("network")
   .description("Configures to the given network")
+  .option("-j, --json", "Output results as JSON")
+  .option("-t, --toon", "Output results as TOON")
   .argument("network", "The network to set", parseNetwork)
   .action((network: Network) => {
     config.set("network", network);
-    console.log("Set network to", network);
+    printOk({ network }, `Set network to ${network}`);
   });

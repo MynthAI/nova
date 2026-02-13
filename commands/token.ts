@@ -2,7 +2,7 @@ import { createPrivateKey, randomBytes } from "crypto";
 import ky from "ky";
 import { Err, Ok } from "ts-handling";
 import { signPayload } from "../auth-signer";
-import program, { logExit } from "../cli";
+import program, { logExit, printOk } from "../cli";
 import config, { getNetwork } from "../config";
 import { AuthEndpoints, type Network } from "../endpoints";
 import { TokenCreatedResponse } from "../responses";
@@ -31,11 +31,13 @@ const createToken = async (network: Network) => {
 program
   .command("token")
   .description("Creates an authentication token after login")
+  .option("-j, --json", "Output results as JSON")
+  .option("-t, --toon", "Output results as TOON")
   .action(async () => {
     const token = await createToken(getNetwork());
     if (!token.ok) return logExit(token.error);
 
-    console.log(token.data);
+    printOk({ authenticated: true, token: token.data }, token.data);
   });
 
 export { createToken };

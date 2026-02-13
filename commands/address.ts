@@ -4,7 +4,7 @@ import { bech32 } from "@scure/base";
 import { Argument } from "commander";
 import ky from "ky";
 import { mayFail, Ok } from "ts-handling";
-import program, { logExit } from "../cli";
+import program, { logExit, printOk } from "../cli";
 import { getNetwork, getPrivateKey } from "../config";
 import { AccountsEndpoints, type Network } from "../endpoints";
 import { transformPrivateKey } from "../key-signer";
@@ -113,29 +113,32 @@ const getAddressFromTokenOrKey = async () => {
 program
   .command("address")
   .description("Gets account address")
+  .option("-j, --json", "Output results as JSON")
+  .option("-t, --toon", "Output results as TOON")
   .addArgument(
     new Argument("[blockchain]", "The blockchain to get the address for")
       .choices(Blockchains)
       .default("mynth"),
   )
   .action(async (blockchain: Blockchain) => {
+    const network = getNetwork();
     const privateKey = getPrivateKey();
     if (privateKey) {
       const address = await getAddressViaPrivateKey(
         privateKey,
-        getNetwork(),
+        network,
         blockchain,
       );
       if (!address.ok) return logExit(address.error);
 
-      console.log(address.data);
+      printOk({ address: address.data, blockchain, network }, address.data);
       return;
     }
 
     const address = await getAddressViaAuth(getNetwork(), blockchain);
     if (!address.ok) return logExit(address.error);
 
-    console.log(address.data);
+    printOk({ address: address.data, blockchain, network }, address.data);
   });
 
 export { getAddressFromPublicKey, getAddressFromTokenOrKey, validate };

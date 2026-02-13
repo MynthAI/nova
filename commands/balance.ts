@@ -1,6 +1,6 @@
 import ky from "ky";
 import { Ok } from "ts-handling";
-import program, { logExit } from "../cli";
+import program, { logExit, printOk } from "../cli";
 import { getNetwork } from "../config";
 import { AccountsEndpoints, type Network } from "../endpoints";
 import { BalanceResponse } from "../responses";
@@ -24,9 +24,14 @@ const getBalance = async (network: Network) => {
 program
   .command("balance")
   .description("Gets current account balance")
+  .option("-j, --json", "Output results as JSON")
+  .option("-t, --toon", "Output results as TOON")
   .action(async () => {
     const balance = await getBalance(getNetwork());
     if (!balance.ok) return logExit(balance.error);
 
-    console.log(balance.data);
+    printOk(
+      { balance: balance.data, currency: "usd" },
+      balance.data.toString(),
+    );
   });
