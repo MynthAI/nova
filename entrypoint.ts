@@ -1,5 +1,5 @@
 import { CommanderError } from "commander";
-import program, { logExit } from "./cli";
+import program, { getHelp, logExit, printOk } from "./cli";
 import "./commands/address";
 import "./commands/balance";
 import "./commands/config";
@@ -14,14 +14,19 @@ try {
   await program.parseAsync(process.argv);
 } catch (error) {
   if (error instanceof CommanderError) {
-    logExit(
-      {
-        code: error.code.split(".")[1] ?? "unknown",
-        message: error.message,
-      },
-      error.exitCode,
-      error.message,
-    );
+    if (error.code === "commander.helpDisplayed") {
+      const help = getHelp();
+      printOk({ help: help.replace(/\s+/g, " ").trim() }, help.trim());
+    } else {
+      logExit(
+        {
+          code: error.code.split(".")[1] ?? "unknown",
+          message: error.message,
+        },
+        error.exitCode,
+        error.message,
+      );
+    }
   } else {
     logExit(String(error));
   }

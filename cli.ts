@@ -3,6 +3,9 @@ import { Command } from "commander";
 import stringify from "safe-stable-stringify";
 
 const program = new Command();
+let helpText = "";
+
+const getHelp = () => helpText;
 
 program
   .name("nova")
@@ -11,8 +14,12 @@ program
   .option("-t, --toon", "Output results as TOON")
   .exitOverride()
   .configureOutput({
-    writeOut: () => {},
-    writeErr: () => {},
+    writeOut: (str) => {
+      helpText += str;
+    },
+    writeErr: (str) => {
+      helpText += str;
+    },
   });
 
 const argvWantsJson = () =>
@@ -59,4 +66,4 @@ const logExit = (
 };
 
 export default program;
-export { logExit, printOk };
+export { getHelp, logExit, printOk };
