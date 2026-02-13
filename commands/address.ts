@@ -36,7 +36,7 @@ const BlockchainMap = {
   tron: "tron",
 } as const;
 
-const getAddress = async (network: Network, blockchain: Blockchain) => {
+const getAddressViaAuth = async (network: Network, blockchain: Blockchain) => {
   const token = await createToken(network);
   if (!token.ok) return token;
 
@@ -49,6 +49,25 @@ const getAddress = async (network: Network, blockchain: Blockchain) => {
   const validatedResponse = AddressResponse.assert(response);
   const address = validatedResponse.contents[BlockchainMap[blockchain]];
   return Ok(address);
+};
+
+const getAddressViaPrivateKey = async (
+  privateKey: string,
+  network: Network,
+  blockchain: Blockchain,
+) => {
+  const address = await getAddressFromPrivateKey(privateKey);
+  if (!address.ok) return address;
+  if (blockchain === "mynth") return Ok(address.data);
+
+  const endpoint = AccountsEndpoints[network];
+  const response = await ky
+    .get(`${endpoint}/address`, {
+      searchParams: { address: address.data },
+    })
+    .json();
+  const validatedResponse = AddressResponse.assert(response);
+  return Ok(validatedResponse.contents[BlockchainMap[blockchain]]);
 };
 
 const validate = (address: string) => {
@@ -88,7 +107,7 @@ const getAddressFromTokenOrKey = async () => {
   const privateKey = config.get("privateKey");
   if (privateKey) return getAddressFromPrivateKey(privateKey);
 
-  return getAddress(getNetwork(), "mynth");
+  return getAddressViaAuth(getNetwork(), "mynth");
 };
 
 program
@@ -102,16 +121,18 @@ program
   .action(async (blockchain: Blockchain) => {
     const privateKey = config.get("privateKey");
     if (privateKey) {
-      if (blockchain !== "mynth")
-        return logExit(`${blockchain} currently not supported`);
-      const address = await getAddressFromPrivateKey(privateKey);
+      const address = await getAddressViaPrivateKey(
+        privateKey,
+        getNetwork(),
+        blockchain,
+      );
       if (!address.ok) return logExit(address.error);
 
       console.log(address.data);
       return;
     }
 
-    const address = await getAddress(getNetwork(), blockchain);
+    const address = await getAddressViaAuth(getNetwork(), blockchain);
     if (!address.ok) return logExit(address.error);
 
     console.log(address.data);
