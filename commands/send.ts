@@ -105,6 +105,29 @@ const resolve = async (
   return { to: addressResponse.contents.address, url: undefined };
 };
 
+type Result = {
+  sent: true;
+  amount: string;
+  to?: string;
+  claimUrl?: string;
+};
+
+const createResult = (
+  amount: Decimal,
+  destination: string | undefined,
+  sent: { data?: string },
+) => {
+  const result: Result = {
+    sent: true,
+    amount: amount.toString(),
+  };
+  const to = destination ?? sent.data ?? null;
+  const claimUrl = destination ? null : (sent.data ?? null);
+  if (claimUrl) result.claimUrl = claimUrl;
+  else if (to) result.to = to;
+  return result;
+};
+
 program
   .command("send")
   .description("Send balance to another account")
@@ -128,12 +151,7 @@ program
       if (!sent.ok) return logExit(sent.error);
 
       printOk(
-        {
-          sent: true,
-          amount: amount.toString(),
-          to: destination ?? sent.data ?? null,
-          claimUrl: destination ? null : (sent.data ?? null),
-        },
+        createResult(amount, destination, sent),
         `Sent ${amount} to ${destination ?? sent.data}`,
       );
       return;
@@ -143,12 +161,7 @@ program
     if (!sent.ok) return logExit(sent.error);
 
     printOk(
-      {
-        sent: true,
-        amount: amount.toString(),
-        to: destination ?? sent.data ?? null,
-        claimUrl: destination ? null : (sent.data ?? null),
-      },
+      createResult(amount, destination, sent),
       `Sent ${amount} to ${destination ?? sent.data}`,
     );
   });
