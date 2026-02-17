@@ -14,7 +14,7 @@ try {
   await program.parseAsync(process.argv);
 } catch (error) {
   if (error instanceof CommanderError) {
-    if (error.code === "commander.helpDisplayed") {
+    if (error.code.includes("commander.help")) {
       const help = getHelp();
       printOk({ help: help.replace(/\s+/g, " ").trim() }, help.trim());
     } else {
