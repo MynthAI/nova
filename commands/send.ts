@@ -29,24 +29,19 @@ const send = async (
 
   const endpoint = AccountsEndpoints[network];
   const { to, url } = await resolve(destination, endpoint);
-  const result = await ky.post(`${endpoint}/transfer`, {
-    headers: { Authorization: "Bearer " + token.data },
-    json: {
+
+  const transfer = await postTransfer(
+    endpoint,
+    {
       amount: amount.toString(),
       nonce: randomBytes(32).toString("hex"),
       to,
     },
-    throwHttpErrors: false,
-  });
-  if (result.status === 200) return Ok(url);
-
-  const data = await result.json();
-  const validationError = ValidationErrorResponse(data);
-  if (validationError instanceof type.errors)
-    return Err("Unkown error: " + data);
-  return Err(
-    validationError.contents.errors.map((error) => error.message).join("; "),
+    token.data,
   );
+  if (!transfer.ok) return transfer;
+
+  return Ok(url);
 };
 
 const sendWithPrivateKey = async (
@@ -67,24 +62,17 @@ const sendWithPrivateKey = async (
     to,
   });
   const signature = await signPayload(payload, finalPrivateKey.data);
-  const result = await ky.post(`${endpoint}/transfer`, {
-    json: {
-      amount: amount.toString(),
-      nonce,
-      signature,
-      to,
-    },
-    throwHttpErrors: false,
-  });
-  if (result.status === 200) return Ok(url);
 
-  const data = await result.json();
-  const validationError = ValidationErrorResponse(data);
-  if (validationError instanceof type.errors)
-    return Err("Unkown error: " + data);
-  return Err(
-    validationError.contents.errors.map((error) => error.message).join("; "),
+  const transfer = await postTransfer(endpoint, {
+    amount: amount.toString(),
+    nonce,
+    signature,
+    to,
+  });
+  if (!transfer.ok) return transfer;
+
   );
+  return Ok(url);
 };
 
 const sendWithTokenOrKey = (amount: Decimal, destination: Address | Email) => {
@@ -145,6 +133,31 @@ const createResult = (
   if (claimUrl) result.claimUrl = claimUrl;
   else if (to) result.to = to;
   return result;
+};
+
+const parseTransferError = async (result: Response) => {
+  const data = await result.json();
+  const validationError = ValidationErrorResponse(data);
+  if (validationError instanceof type.errors) return Err("Unknown " + data);
+
+  return Err(
+    validationError.contents.errors.map((error) => error.message).join("; "),
+  );
+};
+
+const postTransfer = async (
+  endpoint: string,
+  body: Record<string, unknown>,
+  authToken?: string,
+) => {
+  const result = await ky.post(`${endpoint}/transfer`, {
+    headers: authToken ? { Authorization: "Bearer " + authToken } : undefined,
+    json: body,
+    throwHttpErrors: false,
+  });
+
+  if (result.status === 200) return Ok(undefined);
+  return parseTransferError(result);
 };
 
 program
