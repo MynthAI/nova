@@ -71,7 +71,6 @@ const sendWithPrivateKey = async (
   });
   if (!transfer.ok) return transfer;
 
-  );
   return Ok(url);
 };
 
