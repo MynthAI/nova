@@ -5,6 +5,7 @@ import { Err } from "ts-handling";
 import program, { logExit, printOk } from "../cli";
 import { getNetwork } from "../config";
 import { AddressEndpoints, type Network } from "../endpoints";
+import { ValidationErrorResponse } from "../responses";
 import resolveStablecoin from "../stablecoins";
 import { parseAmount, parseBlockchain, parseStablecoin } from "../validators";
 import { sendWithTokenOrKey } from "./send";
@@ -13,18 +14,6 @@ const Response = type({
   code: "200",
   contents: {
     address: "string",
-  },
-});
-
-const ErrorResponse = type({
-  code: "400",
-  contents: {
-    errors: type({
-      code: "'VALIDATION'",
-      message: "string",
-    })
-      .array()
-      .atLeastLength(1),
   },
 });
 
@@ -60,7 +49,7 @@ const withdraw = async (
   const validatedResponse = Response(response);
 
   if (validatedResponse instanceof type.errors) {
-    const errors = ErrorResponse.assert(response);
+    const errors = ValidationErrorResponse.assert(response);
     return Err(errors.contents.errors[0].message);
   }
 
