@@ -1,13 +1,18 @@
 import { randomBytes } from "crypto";
 import { encode } from "@msgpack/msgpack";
+import { type } from "arktype";
 import { Decimal } from "decimal.js";
 import ky from "ky";
-import { Ok } from "ts-handling";
+import { Err, Ok } from "ts-handling";
 import program, { logExit, printOk } from "../cli";
 import { getNetwork, getPrivateKey } from "../config";
 import { AccountsEndpoints, type Network } from "../endpoints";
 import { signPayload, transformPrivateKey } from "../key-signer";
-import { AddressResponse, LinkCreatedResponse } from "../responses";
+import {
+  AddressResponse,
+  LinkCreatedResponse,
+  ValidationErrorResponse,
+} from "../responses";
 import { parseAmount, parseDestination } from "../validators";
 import { createToken } from "./token";
 
@@ -24,17 +29,24 @@ const send = async (
 
   const endpoint = AccountsEndpoints[network];
   const { to, url } = await resolve(destination, endpoint);
-  await ky
-    .post(`${endpoint}/transfer`, {
-      headers: { Authorization: "Bearer " + token.data },
-      json: {
-        amount: amount.toString(),
-        nonce: randomBytes(32).toString("hex"),
-        to,
-      },
-    })
-    .json();
-  return Ok(url);
+  const result = await ky.post(`${endpoint}/transfer`, {
+    headers: { Authorization: "Bearer " + token.data },
+    json: {
+      amount: amount.toString(),
+      nonce: randomBytes(32).toString("hex"),
+      to,
+    },
+    throwHttpErrors: false,
+  });
+  if (result.status === 200) return Ok(url);
+
+  const data = await result.json();
+  const validationError = ValidationErrorResponse(data);
+  if (validationError instanceof type.errors)
+    return Err("Unkown error: " + data);
+  return Err(
+    validationError.contents.errors.map((error) => error.message).join("; "),
+  );
 };
 
 const sendWithPrivateKey = async (
