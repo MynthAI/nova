@@ -67,17 +67,24 @@ const sendWithPrivateKey = async (
     to,
   });
   const signature = await signPayload(payload, finalPrivateKey.data);
-  await ky
-    .post(`${endpoint}/transfer`, {
-      json: {
-        amount: amount.toString(),
-        nonce,
-        signature,
-        to,
-      },
-    })
-    .json();
-  return Ok(url);
+  const result = await ky.post(`${endpoint}/transfer`, {
+    json: {
+      amount: amount.toString(),
+      nonce,
+      signature,
+      to,
+    },
+    throwHttpErrors: false,
+  });
+  if (result.status === 200) return Ok(url);
+
+  const data = await result.json();
+  const validationError = ValidationErrorResponse(data);
+  if (validationError instanceof type.errors)
+    return Err("Unkown error: " + data);
+  return Err(
+    validationError.contents.errors.map((error) => error.message).join("; "),
+  );
 };
 
 const sendWithTokenOrKey = (amount: Decimal, destination: Address | Email) => {
