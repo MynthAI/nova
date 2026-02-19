@@ -66,7 +66,7 @@ class NovaApiClient {
     const response = await this.http.post(`${endpoint}/auth`, {
       json: { email, code },
     });
-    if (response.status !== 200) return parseError(await response.json());
+    if (response.status !== 201) return parseError(await response.json());
     return Ok();
   }
 
