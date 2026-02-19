@@ -9,12 +9,18 @@ import { Network } from "./endpoints";
 type Settings = {
   localEmail?: string;
   localKey?: string;
+  localPendingEmail?: string;
+  localPendingKey?: string;
   mainnetEmail?: string;
   mainnetKey?: string;
+  mainnetPendingEmail?: string;
+  mainnetPendingKey?: string;
   network?: Network;
   privateKey?: string;
   testnetEmail?: string;
   testnetKey?: string;
+  testnetPendingEmail?: string;
+  testnetPendingKey?: string;
 };
 
 const defaultId = "e9f3edf961051d02";
