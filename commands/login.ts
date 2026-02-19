@@ -80,13 +80,15 @@ const confirmLoginCode = async (codeRaw: string, network: Network) => {
   return Ok();
 };
 
-program
+const login = program
   .command("login")
-  .description("Login with email (non-interactive 2-step flow)")
-  .option("-j, --json", "Output results as JSON")
-  .option("-t, --toon", "Output results as TOON")
+  .description("Login with email (non-interactive 2-step flow)");
+
+login
   .command("request")
   .description("Send an authentication code to the email address")
+  .option("-j, --json", "Output results as JSON")
+  .option("-t, --toon", "Output results as TOON")
   .option(
     "-f, --force",
     "Overwrite existing keys/pending login without prompting",
@@ -103,13 +105,11 @@ program
     );
   });
 
-program
-  .command("login")
-  .description("Login with email (non-interactive 2-step flow)")
-  .option("-j, --json", "Output results as JSON")
-  .option("-t, --toon", "Output results as TOON")
+login
   .command("confirm")
   .description("Confirm the authentication code and complete login")
+  .option("-j, --json", "Output results as JSON")
+  .option("-t, --toon", "Output results as TOON")
   .argument("code", "6-character authentication code")
   .action(async (email: string, code: string) => {
     const network = getNetwork();

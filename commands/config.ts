@@ -15,6 +15,7 @@ get
   .command("network")
   .description("Gets the current configured network")
   .option("-j, --json", "Output results as JSON")
+  .option("-t, --toon", "Output results as TOON")
   .action(() => {
     const network = getNetwork();
     printOk({ network }, network);
