@@ -1,6 +1,6 @@
-import { randomBytes } from "crypto";
 import { encode } from "@msgpack/msgpack";
 import { type } from "arktype";
+import { randomBytes } from "crypto";
 import { Decimal } from "decimal.js";
 import ky from "ky";
 import { Err, Ok } from "ts-handling";

@@ -1,4 +1,5 @@
 onlyBuiltDependencies:
+  - '@ast-grep/cli'
   - esbuild
   - native-machine-id
   - unrs-resolver

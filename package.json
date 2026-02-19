@@ -13,10 +13,17 @@
   },
   "scripts": {
     "build": "pnpm tsc",
-    "lint:eslint": "pnpm eslint .",
-    "lint:prettier": "pnpm prettier -c .",
-    "lint": "pnpm npm-run-all lint:eslint lint:prettier",
-    "prettier": "pnpm exec prettier -w ."
+    "lint": "pnpm npm-run-all lint:prettier lint:check lint:lint",
+    "lint:check": "pnpm biome check .",
+    "lint:lint": "pnpm biome lint .",
+    "lint:prettier": "pnpm biome format .",
+    "prettier": "pnpm npm-run-all prettier:format prettier:check prettier:lint",
+    "prettier:check": "pnpm biome check --write .",
+    "prettier:format": "pnpm biome format --write .",
+    "prettier:lint": "pnpm biome lint --write .",
+    "slop": "pnpm npm-run-all slop:braces slop:arrows prettier",
+    "slop:arrows": "pnpm convert-to-arrow .",
+    "slop:braces": "pnpm exec sg scan --rule .ast-grep/rules/strip-braces.yml -U ."
   },
   "resolutions": {
     "@harmoniclabs/crypto": "^0.3.0-dev0"
@@ -39,21 +46,14 @@
     "tsx": "^4.21.0"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.3",
-    "@eslint/js": "^9.39.2",
-    "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
+    "@ast-grep/cli": "^0.40.5",
+    "@biomejs/biome": "^2.4.2",
     "@types/config": "^3.3.5",
     "@types/node": "^25.0.10",
-    "@typescript-eslint/eslint-plugin": "^8.53.1",
-    "@typescript-eslint/parser": "^8.53.1",
     "commander": "^14.0.2",
-    "eslint": "^9.39.2",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-import-resolver-typescript": "^4.4.4",
-    "eslint-plugin-import": "^2.32.0",
+    "convert-to-arrow": "^1.0.21",
     "ky": "^1.14.2",
     "npm-run-all": "^4.1.5",
-    "prettier": "^3.8.1",
     "typescript": "^5.9.3"
   }
 }
