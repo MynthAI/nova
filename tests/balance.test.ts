@@ -1,5 +1,5 @@
 import { describe, expect } from "vitest";
-import { it } from "./base";
+import { it } from "./base.js";
 
 describe("nova balance", () => {
   it("prints 0 for a fresh config", async ({ nova }) => {

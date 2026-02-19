@@ -1,14 +1,14 @@
 import { encode } from "@msgpack/msgpack";
-import { api } from "api";
 import { randomBytes } from "crypto";
 import { Decimal } from "decimal.js";
 import { Ok } from "ts-handling";
-import program, { logExit, printOk } from "../cli";
-import { getNetwork, getPrivateKey } from "../config";
-import { type Network } from "../endpoints";
-import { signPayload, transformPrivateKey } from "../key-signer";
-import { parseAmount, parseDestination } from "../validators";
-import { createToken } from "./token";
+import { api } from "../api.js";
+import program, { logExit, printOk } from "../cli.js";
+import { getNetwork, getPrivateKey } from "../config.js";
+import { type Network } from "../endpoints.js";
+import { signPayload, transformPrivateKey } from "../key-signer.js";
+import { parseAmount, parseDestination } from "../validators.js";
+import { createToken } from "./token.js";
 
 type Address = string;
 type Email = `${string}@${string}`;

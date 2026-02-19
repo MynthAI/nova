@@ -1,32 +1,13 @@
 #!/usr/bin/env node
-import { spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const initCwd = process.env.INIT_CWD || process.cwd();
 const projectRoot = path.resolve(__dirname, "..");
-const cliTs = path.join(projectRoot, "entrypoint.ts");
+const cliJsPath = path.join(projectRoot, "dist", "entrypoint.js");
 
-const localTsx = path.join(
-  projectRoot,
-  "node_modules",
-  ".bin",
-  process.platform === "win32" ? "tsx.cmd" : "tsx",
-);
-const tsxCmd = existsSync(localTsx) ? localTsx : "tsx";
+process.env.INIT_CWD = process.env.INIT_CWD || process.cwd();
 
-const result = spawnSync(tsxCmd, [cliTs, ...process.argv.slice(2)], {
-  stdio: "inherit",
-  cwd: projectRoot,
-  shell: false,
-  env: {
-    ...process.env,
-    INIT_CWD: initCwd,
-  },
-});
-
-process.exit(result.status ?? 1);
+await import(pathToFileURL(cliJsPath).href);

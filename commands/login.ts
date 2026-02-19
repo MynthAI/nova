@@ -1,11 +1,11 @@
-import { api } from "api";
 import { type } from "arktype";
 import { Err, Ok } from "ts-handling";
-import { generateKeys } from "../auth-signer";
-import program, { logExit, printOk } from "../cli";
-import config, { getNetwork } from "../config";
-import { type Network } from "../endpoints";
-import { parseEmail } from "../validators";
+import { api } from "../api.js";
+import { generateKeys } from "../auth-signer.js";
+import program, { logExit, printOk } from "../cli.js";
+import config, { getNetwork } from "../config.js";
+import { type Network } from "../endpoints.js";
+import { parseEmail } from "../validators.js";
 
 const Code = type("string")
   .pipe((v) => v.trim().toUpperCase())

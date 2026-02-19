@@ -1,10 +1,10 @@
 import { createPrivateKey, randomBytes } from "crypto";
 import { Err, Ok } from "ts-handling";
-import { api } from "../api";
-import { signPayload } from "../auth-signer";
-import program, { logExit, printOk } from "../cli";
-import config, { getNetwork } from "../config";
-import { type Network } from "../endpoints";
+import { api } from "../api.js";
+import { signPayload } from "../auth-signer.js";
+import program, { logExit, printOk } from "../cli.js";
+import config, { getNetwork } from "../config.js";
+import { type Network } from "../endpoints.js";
 
 const createToken = async (network: Network) => {
   const email = config.get(`${network}Email`);

@@ -21,6 +21,7 @@ Get up and running in under a minute:
 git clone https://github.com/MynthAI/nova.git
 cd nova
 pnpm install
+pnpm build
 pnpm link
 ```
 

@@ -3,13 +3,13 @@ import { randomBytes } from "crypto";
 import { Decimal } from "decimal.js";
 import ky, { type KyInstance } from "ky";
 import { Err, Ok, type Result } from "ts-handling";
-import { getNetwork } from "./config";
+import { getNetwork } from "./config.js";
 import {
   AccountsEndpoints,
   AddressEndpoints,
   AuthEndpoints,
   type Network,
-} from "./endpoints";
+} from "./endpoints.js";
 import {
   AddressResponse,
   BalanceResponse,
@@ -18,7 +18,7 @@ import {
   RateLimited,
   TokenCreatedResponse,
   ValidationErrorResponse,
-} from "./responses";
+} from "./responses/index.js";
 
 const Address = type(/^[qpzry9x8gf2tvdw0s3jn54khce6mua7l]{38}$/i).pipe((v) =>
   v.toLowerCase(),

@@ -1,7 +1,7 @@
 import { Ok } from "ts-handling";
-import { api } from "../api";
-import program, { logExit, printOk } from "../cli";
-import { getAddressFromTokenOrKey } from "./address";
+import { api } from "../api.js";
+import program, { logExit, printOk } from "../cli.js";
+import { getAddressFromTokenOrKey } from "./address.js";
 
 const getBalance = async () => {
   const address = await getAddressFromTokenOrKey();
