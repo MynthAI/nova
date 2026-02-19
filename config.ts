@@ -3,7 +3,7 @@ import Conf from "conf";
 import { createHash, randomBytes } from "crypto";
 import { existsSync, statSync } from "fs";
 import { getMachineIdSync } from "native-machine-id";
-import { resolve } from "path";
+import { isAbsolute, resolve } from "path";
 import { Network } from "./endpoints";
 
 type Settings = {
@@ -24,12 +24,21 @@ const getEncryptionKey = () =>
     .update(getMachineIdSync() ?? defaultId, "hex")
     .digest("hex");
 
+// The directory the user started the command from
+// INIT_CWD is set via pnpm and nova.mjs; fallback to process.cwd()
+const getLaunchCwd = () => process.env.INIT_CWD?.trim() || process.cwd();
+
 const getConfigCwd = (): string | undefined => {
   const value = process.env.NOVA_CONFIG?.trim();
   if (!value) return undefined;
 
   try {
-    const fullPath = resolve(value);
+    const base = getLaunchCwd();
+
+    // If NOVA_CONFIG is absolute, keep it; otherwise resolve relative to
+    // cwd
+    const fullPath = isAbsolute(value) ? value : resolve(base, value);
+
     if (existsSync(fullPath) && statSync(fullPath).isDirectory())
       return fullPath;
   } catch {}
