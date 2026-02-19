@@ -66,7 +66,7 @@ class NovaApiClient {
     const response = await this.http.post(`${endpoint}/auth`, {
       json: { email, code },
     });
-    if (response.status !== 200) return parseError(await response.json());
+    if (response.status !== 201) return parseError(await response.json());
     return Ok();
   }
 
@@ -218,7 +218,8 @@ const parseError = (data: unknown) => {
   }
 
   const validationError = ValidationErrorResponse(data);
-  if (validationError instanceof type.errors) return Err("Unknown " + data);
+  if (validationError instanceof type.errors)
+    return Err("Unknown " + JSON.stringify(data));
 
   return Err(
     validationError.contents.errors.map((error) => error.message).join("; "),
