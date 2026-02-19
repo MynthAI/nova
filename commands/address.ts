@@ -1,14 +1,13 @@
 import { Bytes, getPublicKeyAsync } from "@noble/ed25519";
 import { blake3 } from "@noble/hashes/blake3.js";
 import { bech32 } from "@scure/base";
+import { api } from "api";
 import { Argument } from "commander";
-import ky from "ky";
 import { mayFail, Ok } from "ts-handling";
 import program, { logExit, printOk } from "../cli";
 import { getNetwork, getPrivateKey } from "../config";
-import { AccountsEndpoints, type Network } from "../endpoints";
+import type { Network } from "../endpoints";
 import { transformPrivateKey } from "../key-signer";
-import { AddressResponse } from "../responses";
 import { createToken } from "./token";
 
 const Blockchains = [
@@ -39,35 +38,23 @@ const BlockchainMap = {
 const getAddressViaAuth = async (network: Network, blockchain: Blockchain) => {
   const token = await createToken(network);
   if (!token.ok) return token;
-
-  const endpoint = AccountsEndpoints[network];
-  const response = await ky
-    .get(`${endpoint}/address`, {
-      headers: { Authorization: "Bearer " + token.data },
-    })
-    .json();
-  const validatedResponse = AddressResponse.assert(response);
-  const address = validatedResponse.contents[BlockchainMap[blockchain]];
-  return Ok(address);
+  return getAddress(token.data, blockchain);
 };
 
 const getAddressViaPrivateKey = async (
   privateKey: string,
-  network: Network,
   blockchain: Blockchain,
 ) => {
   const address = await getAddressFromPrivateKey(privateKey);
   if (!address.ok) return address;
   if (blockchain === "mynth") return Ok(address.data);
+  return getAddress(address.data, blockchain);
+};
 
-  const endpoint = AccountsEndpoints[network];
-  const response = await ky
-    .get(`${endpoint}/address`, {
-      searchParams: { address: address.data },
-    })
-    .json();
-  const validatedResponse = AddressResponse.assert(response);
-  return Ok(validatedResponse.contents[BlockchainMap[blockchain]]);
+const getAddress = async (addressOrToken: string, blockchain: Blockchain) => {
+  const response = await api.getAddress(addressOrToken);
+  if (!response.ok) return response;
+  return Ok(response.data.contents[BlockchainMap[blockchain]]);
 };
 
 const validate = (address: string) => {
@@ -124,11 +111,7 @@ program
     const network = getNetwork();
     const privateKey = getPrivateKey();
     if (privateKey) {
-      const address = await getAddressViaPrivateKey(
-        privateKey,
-        network,
-        blockchain,
-      );
+      const address = await getAddressViaPrivateKey(privateKey, blockchain);
       if (!address.ok) return logExit(address.error);
 
       printOk({ address: address.data, blockchain, network }, address.data);

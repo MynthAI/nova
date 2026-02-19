@@ -1,11 +1,10 @@
 import { createPrivateKey, randomBytes } from "crypto";
-import ky from "ky";
 import { Err, Ok } from "ts-handling";
+import { api } from "../api";
 import { signPayload } from "../auth-signer";
 import program, { logExit, printOk } from "../cli";
 import config, { getNetwork } from "../config";
-import { AuthEndpoints, type Network } from "../endpoints";
-import { TokenCreatedResponse } from "../responses";
+import { type Network } from "../endpoints";
 
 const createToken = async (network: Network) => {
   const email = config.get(`${network}Email`);
@@ -15,17 +14,15 @@ const createToken = async (network: Network) => {
 
   if (!key) return Err("Key not set. Login via `nova login <email>` first");
 
-  const endpoint = AuthEndpoints[network];
   const nonce = randomBytes(32);
   const signature = signPayload(nonce, createPrivateKey(key));
-  const response = await ky
-    .post(`${endpoint}/create-token`, {
-      json: { email, nonce: nonce.toString("hex"), signature },
-    })
-    .json();
-  const validatedResponse = TokenCreatedResponse.assert(response);
-  const token = validatedResponse.contents.token;
-  return Ok(token);
+  const response = await api.createToken(
+    email,
+    nonce.toString("hex"),
+    signature,
+  );
+  if (!response.ok) return response;
+  return Ok(response.data.contents.token);
 };
 
 program

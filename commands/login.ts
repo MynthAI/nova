@@ -1,12 +1,11 @@
 import { confirm, input } from "@inquirer/prompts";
+import { api } from "api";
 import { type } from "arktype";
-import ky from "ky";
 import { Err, mayFailAsync, Ok } from "ts-handling";
 import { generateKeys } from "../auth-signer";
 import program, { logExit, printOk } from "../cli";
 import config, { getNetwork } from "../config";
-import { AuthEndpoints, type Network } from "../endpoints";
-import { RateLimited } from "../responses";
+import { type Network } from "../endpoints";
 import { parseEmail } from "../validators";
 
 const Code = type("string.alphanumeric == 6");
@@ -25,27 +24,8 @@ const login = async (email: string, network: Network) => {
   }
 
   const keys = await generateKeys();
-  const endpoint = AuthEndpoints[network];
-  const response = await ky.post(`${endpoint}/login`, {
-    json: { email, publicKey: keys.public },
-    throwHttpErrors: false,
-  });
-
-  if (response.status == 429) {
-    const json = await response.json();
-    const rateLimited = RateLimited(json);
-
-    if (rateLimited instanceof type.errors)
-      return Err("Rate limited; try again later");
-
-    const seconds = rateLimited.contents.retryAfterSeconds;
-    return Err(`Rate limited. Try again in ${seconds} seconds`);
-  }
-
-  if (response.status > 299) {
-    const json = await response.json();
-    return Err(JSON.stringify(json, undefined, 2));
-  }
+  const login = await api.login(email, keys.public);
+  if (!login.ok) return login;
 
   const code = (
     await mayFailAsync(() =>
@@ -60,10 +40,10 @@ const login = async (email: string, network: Network) => {
       }),
     )
   ).or("");
-
   if (!code) return Err("Code must be entered");
 
-  await ky.post(`${endpoint}/auth`, { json: { email, code } });
+  const auth = await api.auth(email, code);
+  if (!auth.ok) return auth;
 
   const key = keys.private.export({ format: "pem", type: "pkcs8" });
   config.set(`${network}Email`, email);

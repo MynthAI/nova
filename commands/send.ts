@@ -1,18 +1,12 @@
 import { encode } from "@msgpack/msgpack";
-import { type } from "arktype";
+import { api } from "api";
 import { randomBytes } from "crypto";
 import { Decimal } from "decimal.js";
-import ky from "ky";
-import { Err, Ok } from "ts-handling";
+import { Ok } from "ts-handling";
 import program, { logExit, printOk } from "../cli";
 import { getNetwork, getPrivateKey } from "../config";
-import { AccountsEndpoints, type Network } from "../endpoints";
+import { type Network } from "../endpoints";
 import { signPayload, transformPrivateKey } from "../key-signer";
-import {
-  AddressResponse,
-  LinkCreatedResponse,
-  ValidationErrorResponse,
-} from "../responses";
 import { parseAmount, parseDestination } from "../validators";
 import { createToken } from "./token";
 
@@ -27,18 +21,11 @@ const send = async (
   const token = await createToken(network);
   if (!token.ok) return token;
 
-  const endpoint = AccountsEndpoints[network];
-  const { to, url } = await resolve(destination, endpoint);
+  const resolveResult = await resolve(destination);
+  if (!resolveResult.ok) return resolveResult;
+  const { to, url } = resolveResult.data;
 
-  const transfer = await postTransfer(
-    endpoint,
-    {
-      amount: amount.toString(),
-      nonce: randomBytes(32).toString("hex"),
-      to,
-    },
-    token.data,
-  );
+  const transfer = await api.send(token.data, amount, to);
   if (!transfer.ok) return transfer;
 
   return Ok(url);
@@ -48,13 +35,13 @@ const sendWithPrivateKey = async (
   privateKey: string,
   amount: Decimal,
   destination: Address | Email | undefined,
-  network: Network,
 ) => {
   const finalPrivateKey = transformPrivateKey(privateKey);
   if (!finalPrivateKey.ok) return finalPrivateKey;
 
-  const endpoint = AccountsEndpoints[network];
-  const { to, url } = await resolve(destination, endpoint);
+  const resolveResult = await resolve(destination);
+  if (!resolveResult.ok) return resolveResult;
+  const { to, url } = resolveResult.data;
   const nonce = randomBytes(32).toString("hex");
   const payload = encode({
     amount: amount.toString(),
@@ -63,12 +50,7 @@ const sendWithPrivateKey = async (
   });
   const signature = await signPayload(payload, finalPrivateKey.data);
 
-  const transfer = await postTransfer(endpoint, {
-    amount: amount.toString(),
-    nonce,
-    signature,
-    to,
-  });
+  const transfer = await api.send(nonce, signature, amount, to);
   if (!transfer.ok) return transfer;
 
   return Ok(url);
@@ -76,39 +58,24 @@ const sendWithPrivateKey = async (
 
 const sendWithTokenOrKey = (amount: Decimal, destination: Address | Email) => {
   const privateKey = getPrivateKey();
-  if (privateKey)
-    return sendWithPrivateKey(privateKey, amount, destination, getNetwork());
+  if (privateKey) return sendWithPrivateKey(privateKey, amount, destination);
 
   return send(amount, destination, getNetwork());
 };
 
-const createLink = async (endpoint: string) => {
-  const response = await ky.post(`${endpoint}/create-link`).json();
-  const linkResponse = LinkCreatedResponse.assert(response);
-  const domain = new URL(endpoint).origin;
-  const url = `${domain}/c/${linkResponse.contents.token}`;
-  return {
-    address: linkResponse.contents.address,
-    url,
-  };
-};
-
-const resolve = async (
-  destination: Address | Email | undefined,
-  endpoint: string,
-) => {
+const resolve = async (destination: Address | Email | undefined) => {
   if (!destination) {
-    const link = await createLink(endpoint);
-    return { to: link.address, url: link.url };
+    const link = await api.createLink();
+    if (!link.ok) return link;
+    return Ok({ to: link.data.address, url: link.data.url });
   }
 
-  if (!destination.includes("@")) return { to: destination, url: undefined };
+  if (!destination.includes("@"))
+    return Ok({ to: destination, url: undefined });
 
-  const response = await ky
-    .get(`${endpoint}/resolve`, { searchParams: { email: destination } })
-    .json();
-  const addressResponse = AddressResponse.assert(response);
-  return { to: addressResponse.contents.address, url: undefined };
+  const response = await api.resolve(destination);
+  if (!response.ok) return response;
+  return Ok({ to: response.data.contents.address, url: undefined });
 };
 
 type Result = {
@@ -134,31 +101,6 @@ const createResult = (
   return result;
 };
 
-const parseTransferError = async (result: Response) => {
-  const data = await result.json();
-  const validationError = ValidationErrorResponse(data);
-  if (validationError instanceof type.errors) return Err("Unknown " + data);
-
-  return Err(
-    validationError.contents.errors.map((error) => error.message).join("; "),
-  );
-};
-
-const postTransfer = async (
-  endpoint: string,
-  body: Record<string, unknown>,
-  authToken?: string,
-) => {
-  const result = await ky.post(`${endpoint}/transfer`, {
-    headers: authToken ? { Authorization: "Bearer " + authToken } : undefined,
-    json: body,
-    throwHttpErrors: false,
-  });
-
-  if (result.status === 200) return Ok(undefined);
-  return parseTransferError(result);
-};
-
 program
   .command("send")
   .description("Send balance to another account")
@@ -173,12 +115,7 @@ program
   .action(async (amount: Decimal, destination?: string) => {
     const privateKey = getPrivateKey();
     if (privateKey) {
-      const sent = await sendWithPrivateKey(
-        privateKey,
-        amount,
-        destination,
-        getNetwork(),
-      );
+      const sent = await sendWithPrivateKey(privateKey, amount, destination);
       if (!sent.ok) return logExit(sent.error);
 
       printOk(

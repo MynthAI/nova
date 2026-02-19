@@ -1,21 +1,12 @@
-import { type } from "arktype";
 import { Decimal } from "decimal.js";
-import ky from "ky";
 import { Err } from "ts-handling";
+import { api } from "../api";
 import program, { logExit, printOk } from "../cli";
 import { getNetwork } from "../config";
-import { AddressEndpoints, type Network } from "../endpoints";
-import { ValidationErrorResponse } from "../responses";
+import type { Network } from "../endpoints";
 import resolveStablecoin from "../stablecoins";
 import { parseAmount, parseBlockchain, parseStablecoin } from "../validators";
 import { sendWithTokenOrKey } from "./send";
-
-const Response = type({
-  code: "200",
-  contents: {
-    address: "string",
-  },
-});
 
 const withdraw = async (
   amount: Decimal,
@@ -24,36 +15,20 @@ const withdraw = async (
   blockchain: string,
   network: Network,
 ) => {
-  const endpoint = AddressEndpoints[network];
   const token = resolveStablecoin(stablecoin, blockchain, network);
   if (!token) return Err(`${stablecoin} does not exist for ${blockchain}`);
 
-  const response = await ky
-    .post(`${endpoint}/generate`, {
-      json: {
-        source: {
-          blockchain: "mynth",
-          token: "usd",
-        },
-        target: {
-          address,
-          blockchain,
-          token,
-        },
-        amount: amount.toString(),
-        providerId: "novaswap",
-      },
-      throwHttpErrors: false,
-    })
-    .json();
-  const validatedResponse = Response(response);
+  const response = await api.generate(
+    {
+      address,
+      blockchain,
+      token,
+    },
+    amount,
+  );
+  if (!response.ok) return response;
 
-  if (validatedResponse instanceof type.errors) {
-    const errors = ValidationErrorResponse.assert(response);
-    return Err(errors.contents.errors[0].message);
-  }
-
-  return sendWithTokenOrKey(amount, validatedResponse.contents.address);
+  return sendWithTokenOrKey(amount, response.data.contents.address);
 };
 
 program
