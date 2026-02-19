@@ -74,13 +74,13 @@ class NovaApiClient {
     authToken: string,
     amount: Decimal,
     to: string,
-  ): Promise<Result<void, string>>;
+  ): Promise<Result<string, string>>;
   async send(
     nonce: string,
     signature: string,
     amount: Decimal,
     to: string,
-  ): Promise<Result<void, string>>;
+  ): Promise<Result<string, string>>;
   async send(
     ...args: [string, Decimal, string] | [string, string, Decimal, string]
   ) {
@@ -154,16 +154,17 @@ class NovaApiClient {
 
   private async sendViaAuth(authToken: string, amount: Decimal, to: string) {
     const endpoint = AccountsEndpoints[this.network];
+    const nonce = randomBytes(32).toString("hex");
     const response = await this.http.post(`${endpoint}/transfer`, {
       headers: { Authorization: "Bearer " + authToken },
       json: {
         amount: amount.toString(),
-        nonce: randomBytes(32).toString("hex"),
+        nonce,
         to,
       },
     });
     if (response.status !== 200) return parseError(await response.json());
-    return Ok();
+    return Ok(nonce);
   }
 
   private async sendViaKey(
@@ -182,7 +183,7 @@ class NovaApiClient {
       },
     });
     if (response.status !== 200) return parseError(response.json());
-    return Ok();
+    return Ok(nonce);
   }
 
   private async getAddressViaAddress(address: string) {
