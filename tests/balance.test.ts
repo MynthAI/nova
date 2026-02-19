@@ -1,7 +1,7 @@
 import { describe, expect } from "vitest";
 import { it } from "./base";
 
-describe("nova balance (integration)", () => {
+describe("nova balance", () => {
   it("prints 0 for a fresh config", async ({ nova }) => {
     const stdout = await nova(["balance"]);
     expect(stdout).toBe("0");
