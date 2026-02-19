@@ -28,7 +28,7 @@ const send = async (
   const transfer = await api.send(token.data, amount, to);
   if (!transfer.ok) return transfer;
 
-  return Ok(url);
+  return Ok({ txId: transfer.data, url });
 };
 
 const sendWithPrivateKey = async (
@@ -53,7 +53,7 @@ const sendWithPrivateKey = async (
   const transfer = await api.send(nonce, signature, amount, to);
   if (!transfer.ok) return transfer;
 
-  return Ok(url);
+  return Ok({ txId: transfer.data, url });
 };
 
 const sendWithTokenOrKey = (amount: Decimal, destination: Address | Email) => {
@@ -81,6 +81,7 @@ const resolve = async (destination: Address | Email | undefined) => {
 type Result = {
   sent: true;
   amount: string;
+  txId: string;
   to?: string;
   claimUrl?: string;
 };
@@ -88,16 +89,15 @@ type Result = {
 const createResult = (
   amount: Decimal,
   destination: string | undefined,
-  sent: { data?: string },
+  sent: { data: { txId: string; url?: string } },
 ) => {
   const result: Result = {
     sent: true,
     amount: amount.toString(),
+    txId: sent.data.txId,
   };
-  const to = destination ?? sent.data ?? null;
-  const claimUrl = destination ? null : (sent.data ?? null);
-  if (claimUrl) result.claimUrl = claimUrl;
-  else if (to) result.to = to;
+  if (destination) result.to = destination;
+  if (sent.data.url) result.claimUrl = sent.data.url;
   return result;
 };
 
@@ -120,7 +120,7 @@ program
 
       printOk(
         createResult(amount, destination, sent),
-        `Sent ${amount} to ${destination ?? sent.data}`,
+        `Sent ${amount} to ${destination ?? sent.data}; ${sent.data.txId}`,
       );
       return;
     }
@@ -130,7 +130,7 @@ program
 
     printOk(
       createResult(amount, destination, sent),
-      `Sent ${amount} to ${destination ?? sent.data}`,
+      `Sent ${amount} to ${destination ?? sent.data}; ${sent.data.txId}`,
     );
   });
 

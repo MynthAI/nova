@@ -67,11 +67,12 @@ program
       printOk(
         {
           amount: amount.toString(),
+          blockchain,
           stablecoin,
           to: address,
-          blockchain,
+          txId: withdrawn.data.txId,
         },
-        `Withdrew ${amount} to ${address}`,
+        `Withdrew ${amount} to ${address}; ${withdrawn.data.txId}`,
       );
     },
   );
