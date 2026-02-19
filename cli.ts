@@ -48,16 +48,12 @@ const printOk = (result: object, humanReadable?: string) => {
   console.log(humanReadable === undefined ? result : humanReadable);
 };
 
-const logExit = (
-  message: string | object,
-  exitCode = 1,
-  humanReadable?: string,
-) => {
-  process.exitCode = exitCode;
+const logExit = (message: string | object, humanReadable?: string) => {
+  process.exitCode = 1;
 
   if (wantsJsonOutput() || wantsToonOutput()) {
     const error = typeof message === "string" ? { message } : message;
-    const payload = { status: "error", error: { ...error, exitCode } };
+    const payload = { status: "error", error: { ...error, exitCode: 1 } };
     process.stdout.write(formatOutput(payload));
     return;
   }

@@ -23,7 +23,6 @@ try {
           code: error.code.split(".")[1] ?? "unknown",
           message: error.message,
         },
-        error.exitCode,
         error.message,
       );
     }
