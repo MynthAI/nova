@@ -218,7 +218,8 @@ const parseError = (data: unknown) => {
   }
 
   const validationError = ValidationErrorResponse(data);
-  if (validationError instanceof type.errors) return Err("Unknown " + data);
+  if (validationError instanceof type.errors)
+    return Err("Unknown " + JSON.stringify(data));
 
   return Err(
     validationError.contents.errors.map((error) => error.message).join("; "),
