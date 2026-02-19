@@ -26,7 +26,7 @@ exportGroup
       )
     ).or("");
 
-    if (!key) return logExit("no input received", 130);
+    if (!key) return logExit("no input received");
 
     const validated = PrivateKey(key);
 
@@ -50,7 +50,7 @@ exportGroup
       )
     ).or("");
 
-    if (!phrase) return logExit("no input received", 130);
+    if (!phrase) return logExit("no input received");
 
     if (!validateMnemonic(phrase, wordlist))
       return logExit("must be valid mnemonic seed phrase");
