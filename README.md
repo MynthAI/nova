@@ -28,7 +28,8 @@ pnpm link
 Authenticate and start using Nova:
 
 ``` bash
-nova login you@example.com
+nova login request you@example.com
+nova login confirm 123456
 nova balance
 nova send 10 friend@example.com
 ```
@@ -47,6 +48,7 @@ Clone the repository and install dependencies:
 ``` bash
 cd nova
 pnpm install
+pnpm build
 pnpm link
 ```
 
@@ -67,14 +69,16 @@ for your account.
 
 #### How it works
 
-- You log in using your email address
+- You start login by requesting an authentication code to your email
+- You confirm the code to complete login
 - Nova securely manages your wallet
 - You generate an authentication token for CLI access
 
 #### Commands
 
 ``` bash
-nova login <email>
+nova login request <email>
+nova login confirm <code>
 nova token
 ```
 
@@ -149,15 +153,17 @@ Use `-h` or `--help` with any command to see detailed help.
 
 #### `login`
 
-Login using your email address.
+Login using your email address (non-interactive 2-step flow).
 
 ``` bash
-nova login <email>
+nova login request <email>
+nova login confirm <code>
 ```
 
-**Arguments**
+**Commands**
 
-- `email` — Email address to log in with
+- `request <email>` — Send an authentication code to the email address
+- `confirm <code>` — Confirm the authentication code and complete login
 
 #### `token`
 
