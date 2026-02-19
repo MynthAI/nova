@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const initCwd = process.env.INIT_CWD || process.cwd();
 const projectRoot = path.resolve(__dirname, "..");
 const cliTs = path.join(projectRoot, "entrypoint.ts");
 
@@ -22,6 +23,10 @@ const result = spawnSync(tsxCmd, [cliTs, ...process.argv.slice(2)], {
   stdio: "inherit",
   cwd: projectRoot,
   shell: false,
+  env: {
+    ...process.env,
+    INIT_CWD: initCwd,
+  },
 });
 
 process.exit(result.status ?? 1);
