@@ -1,6 +1,6 @@
-import { generateKeyPair, sign, type KeyObject } from "crypto";
-import { promisify } from "util";
 import { type } from "arktype";
+import { generateKeyPair, type KeyObject, sign } from "crypto";
+import { promisify } from "util";
 
 const generateKeyPairAsync = promisify(generateKeyPair);
 

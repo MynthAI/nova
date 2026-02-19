@@ -13,7 +13,7 @@ import "./commands/withdraw";
 try {
   await program.parseAsync(process.argv);
 } catch (error) {
-  if (error instanceof CommanderError) {
+  if (error instanceof CommanderError)
     if (error.code.includes("commander.help")) {
       const help = getHelp();
       printOk({ help: help.replace(/\s+/g, " ").trim() }, help.trim());
@@ -27,7 +27,5 @@ try {
         error.message,
       );
     }
-  } else {
-    logExit(String(error));
-  }
+  else logExit(String(error));
 }

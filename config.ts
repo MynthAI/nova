@@ -1,5 +1,5 @@
-import { createHash, randomBytes } from "crypto";
 import Conf from "conf";
+import { createHash, randomBytes } from "crypto";
 import { getMachineIdSync } from "native-machine-id";
 import { Network } from "./endpoints";
 
