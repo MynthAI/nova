@@ -43,7 +43,7 @@ class NovaApiClient {
 
   async getBalance(address: string) {
     const endpoint = AccountsEndpoints[this.network];
-    const response = await ky
+    const response = await this.http
       .get(`${endpoint}/balance`, { searchParams: { address } })
       .json();
     const validatedResponse = BalanceResponse(response);
@@ -53,7 +53,7 @@ class NovaApiClient {
 
   async login(email: string, publicKey: string) {
     const endpoint = AuthEndpoints[this.network];
-    const response = await ky.post(`${endpoint}/login`, {
+    const response = await this.http.post(`${endpoint}/login`, {
       json: { email, publicKey },
     });
 
@@ -63,7 +63,7 @@ class NovaApiClient {
 
   async auth(email: string, code: string) {
     const endpoint = AuthEndpoints[this.network];
-    const response = await ky.post(`${endpoint}/auth`, {
+    const response = await this.http.post(`${endpoint}/auth`, {
       json: { email, code },
     });
     if (response.status !== 200) return parseError(await response.json());
@@ -95,7 +95,7 @@ class NovaApiClient {
 
   async resolve(email: string) {
     const endpoint = AccountsEndpoints[this.network];
-    const response = await ky
+    const response = await this.http
       .get(`${endpoint}/resolve`, { searchParams: { email } })
       .json();
     const validatedResponse = AddressResponse(response);
@@ -105,7 +105,7 @@ class NovaApiClient {
 
   async createLink() {
     const endpoint = AccountsEndpoints[this.network];
-    const response = await ky.post(`${endpoint}/create-link`).json();
+    const response = await this.http.post(`${endpoint}/create-link`).json();
     const linkResponse = LinkCreatedResponse(response);
     if (linkResponse instanceof type.errors) return parseError(response);
     const domain = new URL(endpoint).origin;
@@ -118,7 +118,7 @@ class NovaApiClient {
 
   async createToken(email: string, nonce: string, signature: string) {
     const endpoint = AuthEndpoints[this.network];
-    const response = await ky
+    const response = await this.http
       .post(`${endpoint}/create-token`, {
         json: { email, nonce: nonce, signature },
       })
@@ -133,7 +133,7 @@ class NovaApiClient {
     amount: Decimal,
   ) {
     const endpoint = AddressEndpoints[this.network];
-    const response = await ky
+    const response = await this.http
       .post(`${endpoint}/generate`, {
         json: {
           source: {
@@ -154,7 +154,7 @@ class NovaApiClient {
 
   private async sendViaAuth(authToken: string, amount: Decimal, to: string) {
     const endpoint = AccountsEndpoints[this.network];
-    const response = await ky.post(`${endpoint}/transfer`, {
+    const response = await this.http.post(`${endpoint}/transfer`, {
       headers: { Authorization: "Bearer " + authToken },
       json: {
         amount: amount.toString(),
@@ -173,7 +173,7 @@ class NovaApiClient {
     to: string,
   ) {
     const endpoint = AccountsEndpoints[this.network];
-    const response = await ky.post(`${endpoint}/transfer`, {
+    const response = await this.http.post(`${endpoint}/transfer`, {
       json: {
         amount: amount.toString(),
         nonce,
@@ -187,7 +187,7 @@ class NovaApiClient {
 
   private async getAddressViaAddress(address: string) {
     const endpoint = AccountsEndpoints[this.network];
-    const response = await ky
+    const response = await this.http
       .get(`${endpoint}/address`, {
         searchParams: { address },
       })
