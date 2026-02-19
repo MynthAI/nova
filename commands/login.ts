@@ -7,7 +7,9 @@ import config, { getNetwork } from "../config";
 import { type Network } from "../endpoints";
 import { parseEmail } from "../validators";
 
-const Code = type("string.alphanumeric == 6");
+const Code = type("string")
+  .pipe((v) => v.trim().toUpperCase())
+  .pipe(type("string.alphanumeric == 6"));
 
 const pendingEmailKey = (network: Network) => `${network}PendingEmail` as const;
 const pendingPrivKey = (network: Network) => `${network}PendingKey` as const;
@@ -23,19 +25,10 @@ const requestLoginCode = async (
   network: Network,
   force = false,
 ) => {
-  // If the old "privateKey" exists, require --force since we can't prompt
+  // If the old "privateKey" exists, require --force
   if (config.get("privateKey") && !force)
     return Err(
       "By logging in, your private key will be erased. Re-run with --force to continue.",
-    );
-
-  // If there's an in-progress login, you can choose to block or overwrite
-  // This blocks unless --force is provided
-  const existingPending =
-    config.get(pendingPrivKey(network)) || config.get(pendingEmailKey(network));
-  if (existingPending && !force)
-    return Err(
-      "A login is already pending for this network. Run `login confirm ...` to finish, or re-run `login request ... --force` to overwrite.",
     );
 
   const keys = await generateKeys();
@@ -64,9 +57,8 @@ const confirmLoginCode = async (codeRaw: string, network: Network) => {
       "No pending login found for this network. Run `login request <email>` first.",
     );
 
-  const code = codeRaw.trim().toUpperCase();
-  const parsed = Code(code);
-  if (parsed instanceof type.errors) return Err(parsed.summary);
+  const code = Code(codeRaw);
+  if (code instanceof type.errors) return Err(code.summary);
 
   const authResp = await api.auth(emailPending, code);
   if (!authResp.ok) return authResp;
@@ -77,7 +69,7 @@ const confirmLoginCode = async (codeRaw: string, network: Network) => {
   config.delete(pendingPrivKey(network));
   config.delete("privateKey");
 
-  return Ok();
+  return Ok(emailPending);
 };
 
 const login = program
@@ -89,10 +81,7 @@ login
   .description("Send an authentication code to the email address")
   .option("-j, --json", "Output results as JSON")
   .option("-t, --toon", "Output results as TOON")
-  .option(
-    "-f, --force",
-    "Overwrite existing keys/pending login without prompting",
-  )
+  .option("-f, --force", "Overwrite existing private key if it exists")
   .argument("email", "The email to login with", parseEmail)
   .action(async (email: string, opts: { force?: boolean }) => {
     const network = getNetwork();
@@ -111,10 +100,13 @@ login
   .option("-j, --json", "Output results as JSON")
   .option("-t, --toon", "Output results as TOON")
   .argument("code", "6-character authentication code")
-  .action(async (email: string, code: string) => {
+  .action(async (code: string) => {
     const network = getNetwork();
-    const finished = await confirmLoginCode(code, network);
-    if (!finished.ok) return logExit(finished.error);
+    const email = await confirmLoginCode(code, network);
+    if (!email.ok) return logExit(email.error);
 
-    printOk({ email, loggedIn: true }, `Logged in as ${email}`);
+    printOk(
+      { email: email.data, loggedIn: true },
+      `Logged in as ${email.data}`,
+    );
   });
