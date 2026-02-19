@@ -1,4 +1,4 @@
-import type { Network } from "./endpoints";
+import type { Network } from "./endpoints.js";
 
 const stablecoins = {
   mainnet: {

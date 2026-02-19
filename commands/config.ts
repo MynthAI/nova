@@ -1,7 +1,7 @@
-import program, { printOk } from "../cli";
-import config, { getNetwork } from "../config";
-import { type Network } from "../endpoints";
-import { parseNetwork } from "../validators";
+import program, { printOk } from "../cli.js";
+import config, { getNetwork } from "../config.js";
+import { type Network } from "../endpoints.js";
+import { parseNetwork } from "../validators.js";
 
 const configCommand = program
   .command("config")

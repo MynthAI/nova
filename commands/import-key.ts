@@ -5,7 +5,7 @@ import { mnemonicToEntropy, validateMnemonic } from "@scure/bip39";
 import { wordlist } from "@scure/bip39/wordlists/english.js";
 import { type } from "arktype";
 import { mayFailAsync } from "ts-handling";
-import program, { logExit, printOk } from "../cli";
+import program, { logExit, printOk } from "../cli.js";
 import config from "../config.js";
 
 const PrivateKey = type("string.hex == 32").or("string.hex == 64");

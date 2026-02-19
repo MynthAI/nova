@@ -1,10 +1,10 @@
-import { logExit } from "cli";
 import Conf from "conf";
 import { createHash, randomBytes } from "crypto";
 import { existsSync, statSync } from "fs";
 import { getMachineIdSync } from "native-machine-id";
 import { isAbsolute, resolve } from "path";
-import { Network } from "./endpoints";
+import { logExit } from "./cli.js";
+import { Network } from "./endpoints.js";
 
 type Settings = {
   localEmail?: string;

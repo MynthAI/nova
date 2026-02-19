@@ -1,12 +1,16 @@
 import { Decimal } from "decimal.js";
 import { Err } from "ts-handling";
-import { api } from "../api";
-import program, { logExit, printOk } from "../cli";
-import { getNetwork } from "../config";
-import type { Network } from "../endpoints";
-import resolveStablecoin from "../stablecoins";
-import { parseAmount, parseBlockchain, parseStablecoin } from "../validators";
-import { sendWithTokenOrKey } from "./send";
+import { api } from "../api.js";
+import program, { logExit, printOk } from "../cli.js";
+import { getNetwork } from "../config.js";
+import type { Network } from "../endpoints.js";
+import resolveStablecoin from "../stablecoins.js";
+import {
+  parseAmount,
+  parseBlockchain,
+  parseStablecoin,
+} from "../validators.js";
+import { sendWithTokenOrKey } from "./send.js";
 
 const withdraw = async (
   amount: Decimal,

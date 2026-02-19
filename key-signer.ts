@@ -2,7 +2,7 @@ import { getPublicKeyAsync, signAsync, verifyAsync } from "@noble/ed25519";
 import { blake3 } from "@noble/hashes/blake3.js";
 import { type } from "arktype";
 import { Err, Ok } from "ts-handling";
-import { getAddressFromPublicKey } from "./commands/address";
+import { getAddressFromPublicKey } from "./commands/address.js";
 
 const Signature = type("string == 128")
   .and(/^[A-Za-z0-9_-]+$/)

@@ -2,8 +2,8 @@ import { entropyToMnemonic } from "@scure/bip39";
 import { wordlist } from "@scure/bip39/wordlists/english.js";
 import { type } from "arktype";
 import { Err, Ok } from "ts-handling";
-import program, { logExit, printOk } from "../cli";
-import { getPrivateKey as getSavedPrivateKey } from "../config";
+import program, { logExit, printOk } from "../cli.js";
+import { getPrivateKey as getSavedPrivateKey } from "../config.js";
 
 const PrivateKey = type("string.hex == 32").or("string.hex == 64");
 

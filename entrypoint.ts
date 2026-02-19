@@ -1,14 +1,14 @@
 import { CommanderError } from "commander";
-import program, { getHelp, logExit, printOk } from "./cli";
-import "./commands/address";
-import "./commands/balance";
-import "./commands/config";
-import "./commands/export-key";
-import "./commands/import-key";
-import "./commands/login";
-import "./commands/send";
-import "./commands/token";
-import "./commands/withdraw";
+import program, { getHelp, logExit, printOk } from "./cli.js";
+import "./commands/address.js";
+import "./commands/balance.js";
+import "./commands/config.js";
+import "./commands/export-key.js";
+import "./commands/import-key.js";
+import "./commands/login.js";
+import "./commands/send.js";
+import "./commands/token.js";
+import "./commands/withdraw.js";
 
 try {
   await program.parseAsync(process.argv);

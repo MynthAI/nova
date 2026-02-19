@@ -1,14 +1,14 @@
 import { Bytes, getPublicKeyAsync } from "@noble/ed25519";
 import { blake3 } from "@noble/hashes/blake3.js";
 import { bech32 } from "@scure/base";
-import { api } from "api";
 import { Argument } from "commander";
 import { mayFail, Ok } from "ts-handling";
-import program, { logExit, printOk } from "../cli";
-import { getNetwork, getPrivateKey } from "../config";
-import type { Network } from "../endpoints";
-import { transformPrivateKey } from "../key-signer";
-import { createToken } from "./token";
+import { api } from "../api.js";
+import program, { logExit, printOk } from "../cli.js";
+import { getNetwork, getPrivateKey } from "../config.js";
+import type { Network } from "../endpoints.js";
+import { transformPrivateKey } from "../key-signer.js";
+import { createToken } from "./token.js";
 
 const Blockchains = [
   "base",
