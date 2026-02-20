@@ -1,4 +1,17 @@
-# skills.md — nova CLI (LLM)
+---
+name: nova-wallet
+description: Safely operate the nova CLI wallet for authentication, balance checks, sending funds, withdrawals, and key management across mainnet and testnet. Enforces deterministic JSON/TOON parsing, exit code validation, financial confirmations, network verification, and strict secret-handling rules. Use when performing nova wallet automation, stablecoin transfers, claim links, exports, or any blockchain transaction via the nova CLI.
+compatibility: Requires nodejs 24 and access to the internet
+---
+
+- If `nova` is not installed, install with:
+
+  ``` bash
+  npm install @mynthai/nova
+  ```
+
+Or run without installing via npx (replace all `nova` usage with
+`npx @mynth/nova`)
 
 ## Deterministic Parsing (MUST)
 
@@ -142,11 +155,20 @@ Behavior:
 
   - Sends directly.
 
+  - `destination` may be:
+
+    - An email address (creates or targets an email wallet).
+    - A nova wallet address.
+    - A supported external blockchain wallet address
+      (network-dependent).
+
 Rules:
 
 - No interactive confirmation.
 - No dry-run.
 - Non-idempotent: re-running sends again.
+- Always confirm with user whether `destination` is an email address or
+  wallet address before execution.
 
 Post-check:
 
@@ -225,6 +247,9 @@ nova -t balance
 
 - Internal transfers / claim links: fee-free; recipient gets full
   amount.
+
+- Direct sends to email or nova wallet addresses: fee-free; recipient
+  gets full amount.
 
 - External withdrawals:
 

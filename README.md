@@ -13,9 +13,41 @@ and share funds via claim links.
 - 📥 Withdraw stablecoins to external blockchains
 - 🔐 Multiple authentication methods
 
+## 🤖 AI Agent Integration
+
+Nova can be used directly by AI agents via **Vercel Skills**.
+
+### Install with Vercel Skills CLI
+
+``` bash
+npx skills add MynthAI/nova
+```
+
+Once installed, the skill is automatically available to your AI agent.
+The agent will invoke Nova commands when relevant tasks are detected.
+
+### Example Agent Prompts
+
+- `Sign-in to my wallet with me@email.com`
+- `Create a $10 claim link`
+
 ## 🚀 Quick Start
 
 Get up and running in under a minute:
+
+### Option 1: Install from npm
+
+``` bash
+npm install @mynthai/nova
+```
+
+Or run directly without installing:
+
+``` bash
+npx @mynthai/nova --help
+```
+
+### Option 2: Build from source
 
 ``` bash
 git clone https://github.com/MynthAI/nova.git
@@ -41,7 +73,22 @@ Use `-h` or `--help` with any command to see detailed usage information.
 ### Requirements
 
 - Node.js **v24** (required)
-- `pnpm` package manager
+- `pnpm` package manager (for building from source)
+
+### Install from npm
+
+``` bash
+npm install @mynthai/nova
+```
+
+You can also run Nova directly with `npx` without installing it
+globally:
+
+``` bash
+npx @mynthai/nova --help
+```
+
+### Install from source
 
 Clone the repository and install dependencies:
 
@@ -53,9 +100,6 @@ pnpm link
 ```
 
 After linking, the `nova` command will be available globally.
-
-> ℹ️ Nova is currently installed from source. If/when it is published to
-> npm, installation instructions will be updated.
 
 ## 🔐 Authentication
 
