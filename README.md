@@ -13,6 +13,24 @@ and share funds via claim links.
 - 📥 Withdraw stablecoins to external blockchains
 - 🔐 Multiple authentication methods
 
+## 🤖 AI Agent Integration
+
+Nova can be used directly by AI agents via **Vercel Skills**.
+
+### Install with Vercel Skills CLI
+
+``` bash
+npx skills add MynthAI/nova
+```
+
+Once installed, the skill is automatically available to your AI agent.
+The agent will invoke Nova commands when relevant tasks are detected.
+
+### Example Agent Prompts
+
+- `Sign-in to my wallet with me@email.com`
+- `Create a $10 claim link`
+
 ## 🚀 Quick Start
 
 Get up and running in under a minute:
