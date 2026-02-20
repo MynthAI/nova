@@ -19,6 +19,7 @@
     "prebuild": "pnpm del -rf dist",
     "build": "pnpm tsc",
     "postbuild": "pnpm del -rf dist/tests",
+    "link": "pnpm link --global",
     "lint": "pnpm npm-run-all lint:prettier lint:check lint:lint",
     "lint:check": "pnpm biome check .",
     "lint:lint": "pnpm biome lint .",

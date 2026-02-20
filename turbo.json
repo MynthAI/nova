@@ -3,7 +3,8 @@
   "tasks": {
     "build": {},
     "lint": {},
-    "test": { "dependsOn": ["build"] },
+    "link": {},
+    "test": { "dependsOn": ["build", "link"] },
     "ci": { "dependsOn": ["build", "lint", "test"] }
   }
 }
