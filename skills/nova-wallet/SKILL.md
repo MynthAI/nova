@@ -1,11 +1,8 @@
 ---
 name: nova-wallet
 description: Safely operate the nova CLI wallet for authentication, balance checks, sending funds, withdrawals, and key management across mainnet and testnet. Enforces deterministic JSON/TOON parsing, exit code validation, financial confirmations, network verification, and strict secret-handling rules. Use when performing nova wallet automation, stablecoin transfers, claim links, exports, or any blockchain transaction via the nova CLI.
+compatibility: Requires nodejs 24 and access to the internet
 ---
-
-## Prerequisites
-
-- **Node.js v24 is required**
 
 - If `nova` is not installed, install with:
 
