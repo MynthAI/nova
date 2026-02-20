@@ -19,6 +19,7 @@
     "prebuild": "pnpm del -rf dist",
     "build": "pnpm tsc",
     "postbuild": "pnpm del -rf dist/tests",
+    "link": "pnpm link --global",
     "lint": "pnpm npm-run-all lint:prettier lint:check lint:lint",
     "lint:check": "pnpm biome check .",
     "lint:lint": "pnpm biome lint .",
@@ -63,6 +64,7 @@
     "ky": "^1.14.3",
     "npm-run-all": "^4.1.5",
     "tsx": "^4.21.0",
+    "turbo": "^2.8.10",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
   }
