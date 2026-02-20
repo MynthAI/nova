@@ -1,4 +1,7 @@
-# skills.md — nova CLI (LLM)
+---
+name: nova-wallet
+description: Safely operate the nova CLI wallet for authentication, balance checks, sending funds, withdrawals, and key management across mainnet and testnet. Enforces deterministic JSON/TOON parsing, exit code validation, financial confirmations, network verification, and strict secret-handling rules. Use when performing nova wallet automation, stablecoin transfers, claim links, exports, or any blockchain transaction via the nova CLI.
+---
 
 ## Prerequisites
 
