@@ -1,6 +1,9 @@
 {
-  "name": "nova",
-  "private": true,
+  "name": "@mynthai/nova",
+  "version": "0.0.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "CLI for easy stablecoins",
   "license": "MIT",
   "packageManager": "pnpm@10.28.1",
@@ -11,6 +14,7 @@
   "bin": {
     "nova": "bin/nova.mjs"
   },
+  "files": ["dist"],
   "scripts": {
     "prebuild": "pnpm del -rf dist",
     "build": "pnpm tsc",
