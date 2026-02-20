@@ -2,10 +2,15 @@
   "name": "@mynthai/nova",
   "version": "0.0.1",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   },
   "description": "CLI for easy stablecoins",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MynthAI/nova.git"
+  },
   "packageManager": "pnpm@10.30.1",
   "engines": {
     "node": "==24"
