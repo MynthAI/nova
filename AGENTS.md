@@ -1,4 +1,4 @@
-# skills.md — nova CLI
+# nova CLI
 
 `nova` is a CLI wallet for managing balances, sending funds, and
 withdrawing stablecoins across supported blockchains.
