@@ -47,6 +47,9 @@ importers:
       emailjs:
         specifier: ^5.0.0
         version: 5.0.0(typescript@5.9.3)
+      ky:
+        specifier: ^1.14.3
+        version: 1.14.3
       native-machine-id:
         specifier: ^0.3.6
         version: 0.3.6
@@ -78,9 +81,6 @@ importers:
       execa:
         specifier: ^9.6.1
         version: 9.6.1
-      ky:
-        specifier: ^1.14.3
-        version: 1.14.3
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5

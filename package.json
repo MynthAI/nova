@@ -56,6 +56,7 @@
     "conf": "^15.1.0",
     "decimal.js": "^10.6.0",
     "emailjs": "^5.0.0",
+    "ky": "^1.14.3",
     "native-machine-id": "^0.3.6",
     "safe-stable-stringify": "^2.5.0",
     "ts-handling": "^0.2.6"
@@ -68,7 +69,6 @@
     "convert-to-arrow": "^1.0.21",
     "del-cli": "^7.0.0",
     "execa": "^9.6.1",
-    "ky": "^1.14.3",
     "npm-run-all": "^4.1.5",
     "tsx": "^4.21.0",
     "turbo": "^2.8.10",
