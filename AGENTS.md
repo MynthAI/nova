@@ -3,6 +3,17 @@
 `nova` is a CLI wallet for managing balances, sending funds, and
 withdrawing stablecoins across supported blockchains.
 
+It requires **Node.js 24+** as a prerequisite.
+
+If `nova` is not installed, you can install it via:
+
+``` bash
+npm install -g @mynthai/nova
+```
+
+Or run without installing via npx (replace all `nova` usage with
+`npx @mynth/nova`).
+
 It supports:
 
 - Email-based login wallets

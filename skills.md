@@ -1,5 +1,18 @@
 # skills.md — nova CLI (LLM)
 
+## Prerequisites
+
+- **Node.js v24 is required**
+
+- If `nova` is not installed, install with:
+
+  ``` bash
+  npm install @mynthai/nova
+  ```
+
+Or run without installing via npx (replace all `nova` usage with
+`npx @mynth/nova`)
+
 ## Deterministic Parsing (MUST)
 
 - Use structured output: `-j/--json` or `-t/--toon` (never parse human
