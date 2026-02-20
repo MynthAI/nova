@@ -143,6 +143,7 @@ Use when:
 
 - User needs deposit address
 - Withdrawing from external service
+- Sharing a wallet address for direct wallet-to-wallet transfers
 
 #### Get Balance
 
@@ -205,16 +206,36 @@ Before any financial action (`send`, `withdraw`) agents should:
 
 ### Sending Funds
 
-#### Send to Email or Address
+#### Send to Email or Wallet Address
 
 ``` bash
 nova send <amount> [destination]
 ```
 
+`destination` can be:
+
+- An **email address** (e.g., `user@email.com`)
+- A **nova wallet address** (e.g.,
+  `pcr6cdcvwjf9297vv6jmy8284xwlscspj2g0fw`)
+
 Behavior:
 
 - If destination omitted → creates claim link
-- If destination provided → sends directly
+- If destination is an email → sends to that email-linked nova wallet
+- If destination is a wallet address → sends directly to that wallet
+
+Email-based sends:
+
+- If the email is already registered with `nova`, funds are delivered
+  directly to that wallet.
+- If the email is not yet registered, funds are reserved and can be
+  claimed once the recipient completes email login.
+- No blockchain address is required when sending to email.
+
+Wallet-address sends:
+
+- Must be a valid `nova` wallet address for the current network.
+- Always validate format before execution.
 
 ⚠️ Non-Interactive Execution Warning. `nova send` executes immediately
 and does **not** prompt for confirmation.
@@ -226,8 +247,8 @@ and does **not** prompt for confirmation.
 
 Agents must:
 
-- Explicitly confirm amount, destination, and network **before**
-  executing
+- Explicitly confirm amount, destination (email or wallet address), and
+  network **before** executing
 - Avoid retrying failed sends without verifying transaction status
 - Treat every `nova send` call as a final financial action
 - Always parse `status` and confirm `sent: true` before assuming success
@@ -294,7 +315,13 @@ Create claim link:
 nova send 10
 ```
 
-Send to address:
+Send to email:
+
+``` bash
+nova send 10 friend@email.com
+```
+
+Send to wallet address:
 
 ``` bash
 nova send 10 pcr6cdcvwjf9297vv6jmy8284xwlscspj2g0fw
@@ -303,7 +330,7 @@ nova send 10 pcr6cdcvwjf9297vv6jmy8284xwlscspj2g0fw
 Best Practices for Agents:
 
 - Confirm amount before sending
-- Validate destination format
+- Validate destination format (email vs wallet address)
 - Prefer structured output (`-j` or `-t`)
 - Display claim URL clearly if generated
 - Treat `claimUrl` like a secret (don’t paste it into shared channels,
@@ -375,8 +402,8 @@ nova -t balance
 ### Fees
 
 - **Internal Transfers (nova → nova):** Sending USD balance to another
-  `nova` wallet (email or address) is always fee-free. The recipient
-  receives the full amount specified.
+  `nova` wallet (email or wallet address) is always fee-free. The
+  recipient receives the full amount specified.
 
 - **Claim Links:** Creating a claim link (`nova send <amount>`) is also
   fee-free. The full amount is locked for the recipient to claim.
@@ -470,7 +497,7 @@ If:
 - `status != ok` → surface error clearly
 - Exit code `1` → treat as failure
 - Balance insufficient → suggest checking balance
-- Invalid address → prompt for correction
+- Invalid address or malformed email → prompt for correction
 
 ### Example: Insufficient Balance Error
 
@@ -526,7 +553,8 @@ when using structured output modes.
 - Confirm:
 
   - Amount
-  - Destination (or confirm they want a claim link)
+  - Destination (email, wallet address, or confirm they want a claim
+    link)
   - Network
 
 - If no destination → explain claim link flow and that funds move
@@ -629,7 +657,7 @@ Never:
     nova balance
     ```
 
-4.  Send funds:
+4.  Send funds to email or wallet address:
 
     ``` bash
     nova send 10 friend@email.com
@@ -676,6 +704,7 @@ If user intent includes:
 `nova` is a programmable wallet CLI that supports:
 
 - Email or private-key wallets
+- Email-based or wallet-address internal transfers
 - Multi-chain withdrawals
 - Stablecoin transfers
 - Automation-friendly output

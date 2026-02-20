@@ -155,11 +155,20 @@ Behavior:
 
   - Sends directly.
 
+  - `destination` may be:
+
+    - An email address (creates or targets an email wallet).
+    - A nova wallet address.
+    - A supported external blockchain wallet address
+      (network-dependent).
+
 Rules:
 
 - No interactive confirmation.
 - No dry-run.
 - Non-idempotent: re-running sends again.
+- Always confirm with user whether `destination` is an email address or
+  wallet address before execution.
 
 Post-check:
 
@@ -238,6 +247,9 @@ nova -t balance
 
 - Internal transfers / claim links: fee-free; recipient gets full
   amount.
+
+- Direct sends to email or nova wallet addresses: fee-free; recipient
+  gets full amount.
 
 - External withdrawals:
 
