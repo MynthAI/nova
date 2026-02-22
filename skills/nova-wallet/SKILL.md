@@ -11,7 +11,7 @@ compatibility: Requires nodejs 24 and access to the internet
   ```
 
 Or run without installing via npx (replace all `nova` usage with
-`npx @mynth/nova`)
+`npx @mynthai/nova`)
 
 ## Deterministic Parsing (MUST)
 

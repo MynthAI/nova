@@ -12,7 +12,7 @@ npm install -g @mynthai/nova
 ```
 
 Or run without installing via npx (replace all `nova` usage with
-`npx @mynth/nova`).
+`npx @mynthai/nova`).
 
 It supports:
 
