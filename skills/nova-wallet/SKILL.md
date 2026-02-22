@@ -2,6 +2,9 @@
 name: nova-wallet
 description: Safely operate the nova CLI wallet for authentication, balance checks, sending funds, withdrawals, and key management across mainnet and testnet. Enforces deterministic JSON/TOON parsing, exit code validation, financial confirmations, network verification, and strict secret-handling rules. Use when performing nova wallet automation, stablecoin transfers, claim links, exports, or any blockchain transaction via the nova CLI.
 compatibility: Requires nodejs 24 and access to the internet
+metadata:
+  homepage: https://github.com/MynthAI/nova
+  package: https://www.npmjs.com/package/@mynthai/nova
 ---
 
 - If `nova` is not installed, install with:
@@ -11,7 +14,7 @@ compatibility: Requires nodejs 24 and access to the internet
   ```
 
 Or run without installing via npx (replace all `nova` usage with
-`npx @mynth/nova`)
+`npx @mynthai/nova`)
 
 ## Deterministic Parsing (MUST)
 
