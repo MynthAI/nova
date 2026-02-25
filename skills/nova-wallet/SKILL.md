@@ -173,7 +173,8 @@ Rules:
 
 - No interactive confirmation.
 - Non-idempotent: re-running sends again.
-- Use `--dry-run` (`-d`) to validate inputs and preview without submitting.
+- Use `--dry-run` (`-d`) to validate inputs and preview without
+  submitting.
 - Always confirm with user whether `destination` is an email address or
   wallet address before execution.
 

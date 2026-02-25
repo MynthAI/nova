@@ -728,8 +728,8 @@ Never:
 
 If user intent includes:
 
-| Intent               | Suggest                           |
-|----------------------|-----------------------------------|
+| Intent             | Suggest                           |
+|--------------------|-----------------------------------|
 | “receive funds”    | `nova address`                    |
 | “backup wallet”    | `nova export phrase`              |
 | “send money”       | `nova send`                       |
