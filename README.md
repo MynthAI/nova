@@ -246,6 +246,10 @@ nova send <amount> [destination]
 - `amount` — Amount to send
 - `destination` *(optional)* — Recipient email or Nova account address
 
+**Options**
+
+- `-d, --dry-run` — Preview the transaction without submitting it
+
 **Behavior**
 
 - If `destination` **is provided**, funds are sent directly to that
@@ -290,6 +294,10 @@ nova withdraw <amount> <stablecoin> <address> <blockchain>
 - `address` — Destination blockchain address
 - `blockchain` — Target blockchain (required if it cannot be inferred
   from the address)
+
+**Options**
+
+- `-d, --dry-run` — Preview the transaction without submitting it
 
 #### `config`
 
