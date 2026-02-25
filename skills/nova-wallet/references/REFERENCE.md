@@ -241,9 +241,16 @@ Wallet-address sends:
 and does **not** prompt for confirmation.
 
 - There is **no interactive confirmation step**
-- There is **no dry-run mode**
 - Sends are **not idempotent** (re-running the same command will send
   funds again)
+- Use `--dry-run` (`-d`) to validate inputs and preview the transaction
+  **without** submitting it
+
+Options:
+
+- `-j, --json` Output results as JSON
+- `-t, --toon` Output results as TOON
+- `-d, --dry-run` Validate and preview without submitting
 
 Agents must:
 
@@ -327,6 +334,18 @@ Send to wallet address:
 nova send 10 pcr6cdcvwjf9297vv6jmy8284xwlscspj2g0fw
 ```
 
+Dry-run (preview without submitting):
+
+``` bash
+nova -j send --dry-run 10 friend@email.com
+```
+
+Example dry-run output (JSON):
+
+``` bash
+{"result":{"amount":"10","dryRun":true,"to":"friend@email.com"},"status":"ok"}
+```
+
 Best Practices for Agents:
 
 - Confirm amount before sending
@@ -342,10 +361,28 @@ Best Practices for Agents:
 nova withdraw <amount> <stablecoin> <address> <blockchain>
 ```
 
+Options:
+
+- `-j, --json` Output results as JSON
+- `-t, --toon` Output results as TOON
+- `-d, --dry-run` Validate and preview without submitting
+
 Example:
 
 ``` bash
 nova withdraw 10 USDC 0x7600eFB256ae7519e73C14a55152B0806b5cfF28 base
+```
+
+Dry-run (preview without submitting):
+
+``` bash
+nova -j withdraw --dry-run 10 USDC 0x7600eFB256ae7519e73C14a55152B0806b5cfF28 base
+```
+
+Example dry-run output (JSON):
+
+``` bash
+{"result":{"amount":"10","blockchain":"base","dryRun":true,"stablecoin":"USDC","to":"0x7600eFB256ae7519e73C14a55152B0806b5cfF28"},"status":"ok"}
 ```
 
 Parameters:
@@ -691,13 +728,15 @@ Never:
 
 If user intent includes:
 
-| Intent           | Suggest                           |
-|------------------|-----------------------------------|
-| “receive funds”  | `nova address`                    |
-| “backup wallet”  | `nova export phrase`              |
-| “send money”     | `nova send`                       |
-| “cash out”       | `nova withdraw`                   |
-| “switch testnet” | `nova config set network testnet` |
+| Intent             | Suggest                           |
+|--------------------|-----------------------------------|
+| “receive funds”    | `nova address`                    |
+| “backup wallet”    | `nova export phrase`              |
+| “send money”       | `nova send`                       |
+| “preview send”     | `nova send --dry-run`             |
+| “cash out”         | `nova withdraw`                   |
+| “preview withdraw” | `nova withdraw --dry-run`         |
+| “switch testnet”   | `nova config set network testnet` |
 
 ## Summary
 

@@ -40,6 +40,10 @@ program
   .description("Withdraws balance to external blockchain")
   .option("-j, --json", "Output results as JSON")
   .option("-t, --toon", "Output results as TOON")
+  .option(
+    "-d, --dry-run",
+    "Validate and preview the transaction without submitting it",
+  )
   .argument("amount", "The amount of balance to withdraw", parseAmount)
   .argument(
     "stablecoin",
@@ -58,7 +62,26 @@ program
       stablecoin: string,
       address: string,
       blockchain: string,
+      options: { dryRun?: boolean },
     ) => {
+      if (options.dryRun) {
+        const token = resolveStablecoin(stablecoin, blockchain, getNetwork());
+        if (!token)
+          return logExit(`${stablecoin} does not exist for ${blockchain}`);
+
+        printOk(
+          {
+            dryRun: true,
+            amount: amount.toString(),
+            blockchain,
+            stablecoin,
+            to: address,
+          },
+          `Would withdraw ${amount} to ${address}`,
+        );
+        return;
+      }
+
       const withdrawn = await withdraw(
         amount,
         stablecoin,

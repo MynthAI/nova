@@ -147,6 +147,10 @@ Notes:
 nova send <amount> [destination]
 ```
 
+Options:
+
+- `-d`, `--dry-run` — Validate and preview without submitting
+
 Behavior:
 
 - If `destination` omitted:
@@ -168,8 +172,9 @@ Behavior:
 Rules:
 
 - No interactive confirmation.
-- No dry-run.
 - Non-idempotent: re-running sends again.
+- Use `--dry-run` (`-d`) to validate inputs and preview without
+  submitting.
 - Always confirm with user whether `destination` is an email address or
   wallet address before execution.
 
@@ -204,6 +209,10 @@ Properties (when `nova send <amount>` has no destination):
 ``` bash
 nova withdraw <amount> <stablecoin> <address> <blockchain>
 ```
+
+Options:
+
+- `-d`, `--dry-run` — Validate and preview without submitting
 
 Rules:
 

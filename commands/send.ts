@@ -106,32 +106,55 @@ program
   .description("Send balance to another account")
   .option("-j, --json", "Output results as JSON")
   .option("-t, --toon", "Output results as TOON")
+  .option(
+    "-d, --dry-run",
+    "Validate and preview the transaction without submitting it",
+  )
   .argument("amount", "The amount of balance to send", parseAmount)
   .argument(
     "[destination]",
     "The email address or Mynth account address to send balance to. If omitted then a claim link will be created.",
     parseDestination,
   )
-  .action(async (amount: Decimal, destination?: string) => {
-    const privateKey = getPrivateKey();
-    if (privateKey) {
-      const sent = await sendWithPrivateKey(privateKey, amount, destination);
+  .action(
+    async (
+      amount: Decimal,
+      destination: string | undefined,
+      options: { dryRun?: boolean },
+    ) => {
+      if (options.dryRun) {
+        const result: { dryRun: true; amount: string; to?: string } = {
+          dryRun: true,
+          amount: amount.toString(),
+        };
+        if (destination) result.to = destination;
+        printOk(
+          result,
+          `Would send ${amount}${destination ? ` to ${destination}` : ""}`,
+        );
+        return;
+      }
+
+      const privateKey = getPrivateKey();
+      if (privateKey) {
+        const sent = await sendWithPrivateKey(privateKey, amount, destination);
+        if (!sent.ok) return logExit(sent.error);
+
+        printOk(
+          createResult(amount, destination, sent),
+          `Sent ${amount} to ${destination ?? sent.data}; ${sent.data.txId}`,
+        );
+        return;
+      }
+
+      const sent = await send(amount, destination, getNetwork());
       if (!sent.ok) return logExit(sent.error);
 
       printOk(
         createResult(amount, destination, sent),
         `Sent ${amount} to ${destination ?? sent.data}; ${sent.data.txId}`,
       );
-      return;
-    }
-
-    const sent = await send(amount, destination, getNetwork());
-    if (!sent.ok) return logExit(sent.error);
-
-    printOk(
-      createResult(amount, destination, sent),
-      `Sent ${amount} to ${destination ?? sent.data}; ${sent.data.txId}`,
-    );
-  });
+    },
+  );
 
 export { sendWithTokenOrKey };
