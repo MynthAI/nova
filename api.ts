@@ -17,6 +17,7 @@ import {
   LinkCreatedResponse,
   RateLimited,
   TokenCreatedResponse,
+  TransactionsResponse,
   ValidationErrorResponse,
 } from "./responses/index.js";
 
@@ -47,6 +48,16 @@ class NovaApiClient {
       .get(`${endpoint}/balance`, { searchParams: { address } })
       .json();
     const validatedResponse = BalanceResponse(response);
+    if (validatedResponse instanceof type.errors) return parseError(response);
+    return Ok(validatedResponse);
+  }
+
+  async getTransactions(address: string) {
+    const endpoint = AccountsEndpoints[this.network];
+    const response = await this.http
+      .get(`${endpoint}/transactions`, { searchParams: { address } })
+      .json();
+    const validatedResponse = TransactionsResponse(response);
     if (validatedResponse instanceof type.errors) return parseError(response);
     return Ok(validatedResponse);
   }

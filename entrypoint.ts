@@ -8,6 +8,7 @@ import "./commands/import-key.js";
 import "./commands/login.js";
 import "./commands/send.js";
 import "./commands/token.js";
+import "./commands/transactions.js";
 import "./commands/withdraw.js";
 
 try {
