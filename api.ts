@@ -193,7 +193,7 @@ class NovaApiClient {
         to,
       },
     });
-    if (response.status !== 200) return parseError(response.json());
+    if (response.status !== 200) return parseError(await response.json());
     return Ok(nonce);
   }
 
