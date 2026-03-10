@@ -11,7 +11,15 @@ const getTransactions = async (address?: string) => {
 
   const response = await api.getTransactions(resolvedAddress.data);
   if (!response.ok) return response;
-  return Ok(response.data.contents.transactions);
+
+  const seen = new Set<string>();
+  const transactions = response.data.contents.transactions.filter((tx) => {
+    if (seen.has(tx.txId)) return false;
+    seen.add(tx.txId);
+    return true;
+  });
+
+  return Ok(transactions);
 };
 
 program
