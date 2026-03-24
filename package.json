@@ -19,9 +19,7 @@
   "bin": {
     "nova": "bin/nova.mjs"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "prebuild": "pnpm del -rf dist",
     "build": "pnpm tsc",
