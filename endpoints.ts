@@ -19,5 +19,5 @@ const AddressEndpoints: Record<Network, string> = {
   mainnet: "https://www.mynth.ai/api/address",
 };
 
-export { AccountsEndpoints, AddressEndpoints, AuthEndpoints, Networks };
 export type { Network };
+export { AccountsEndpoints, AddressEndpoints, AuthEndpoints, Networks };

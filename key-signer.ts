@@ -71,4 +71,4 @@ const verifySignedPayload = async (
   return address;
 };
 
-export { transformPrivateKey, signPayload, verifySignedPayload };
+export { signPayload, transformPrivateKey, verifySignedPayload };
